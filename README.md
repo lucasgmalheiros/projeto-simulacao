@@ -1,3 +1,16 @@
+# Estrutura do repositório
+    .
+    ├── analise.ipynb
+    ├── arena
+    │   ├── call-center.Backup.doe
+    │   └── call-center.doe
+    ├── calls.csv
+    ├── README.md
+    ├── requirements.txt
+    └── times
+        ├── service_times.txt
+        └── wait_times.txt
+
 # Especificações do projeto
 
 Considere uma central de atendimentos cujas linhas estão abertas das 8:00 às 18:00, de segunda a sexta-feira e quatro atendentes estão em serviço a qualquer hora e para qualquer ligação.
