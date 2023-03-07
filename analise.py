@@ -115,14 +115,7 @@ df["arrival_time"][0] = 0
 time_series = df.iloc[:,10].astype("timedelta64[s]")
 time_series = time_series.dt.total_seconds()
 df["arrival_time"] = time_series
-
-print(type(df["arrival_time"][2]))
-
 df.head()
 
-
-
 # %%
-
-
 
