@@ -1,0 +1,30 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{newtxtext} % Times New Roman
+\usepackage[top=3cm, bottom=2cm, left=3cm, right=2cm]{geometry}
+\usepackage{ragged2e}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{makeidx}
+\usepackage{graphicx}
+\usepackage{afterpage}
+\makeindex % Criar índice depois
+
+
+% Início do corpo do texto
+\begin{document}
+
+\input{capa.tex}
+
+\newpage{}
+\tableofcontents{}
+\newpage{}
+
+\input{introducao.tex}
+\input{analise_dados.tex}
+
+
+
+\end{document}

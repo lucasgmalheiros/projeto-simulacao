@@ -1,0 +1,5 @@
+\babel@toc {brazil}{}\relax 
+\contentsline {section}{\numberline {1}Preâmbulo}{3}{}%
+\contentsline {subsection}{\numberline {1.1}Chamado às Musas}{3}{}%
+\contentsline {subsection}{\numberline {1.2}Descrição do projeto}{3}{}%
+\contentsline {section}{\numberline {2}Análise de dados}{3}{}%
