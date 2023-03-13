@@ -76,5 +76,10 @@ O comportamento do tempo médio de serviço ao longo do ano pode ser visto na Fi
     \label{fig: t_servico-tempo}
 \end{figure}
 
-% Para testar a hipótese que o tempo de serviço segue uma mesma distribuição ao longo do ano, foi utilizado o teste não paramétrico de Kolgomorov-Smirnov com duas amostras, testando os meses dois a dois. Os resultados estão na Tabela \ref*{label}. As células em verde possuem valor $p$ maior que o nível de significância adotado que é $\alpha = 5\%$, e, portanto não há diferenças estatisticamente significativas entre a distribuição dos tempos de serviço ao longo dos meses do ano.
+Para testar a hipótese que o tempo de serviço segue uma mesma distribuição ao longo do ano, foi utilizado o teste não paramétrico de Kolgomorov-Smirnov com duas amostras, testando os meses dois a dois. Os resultados estão na Figura \ref*{fig: KS_servico}. As células em verde possuem valor $p$ maior que o nível de significância adotado que é $\alpha = 5\%$, e, portanto não há diferenças estatisticamente significativas entre a distribuição dos tempos de serviço ao longo dos meses do ano.
 
+\begin{figure}[ht]
+    \includegraphics[scale=0.6]{analise-de-dados/anual/ks-service.png}
+    \caption{Teste KS 2 amostras para tempos de serviço}
+    \label{fig: KS_servico}
+\end{figure}
