@@ -1,1 +1,14 @@
 \subsection{Descrição do projeto}
+Na primeira etapa do projeto, foi realizada a modelagem e analíse dos dados referentes a ligações recebidas por uma central de atendimentos.\\
+Para isso, foram analísadas diferentes variáveis (data, número da ligação no dia, horário da ligação, horário de atendimento, horário de encerramento, tempo de espera, tempo de serviço) para especificados períodos (semanal, mensal, trimestral, anual). Além disso, a variável dependente relativa à diferença de tempo entre as chamadas foi adicionada para que seu comportamento fosse análisado.\\
+As variáveis importantes para a análise são: Tempo de espera, tempo de serviço e intervalo entre chamadas.\\
+Para os testes de hipóteses atrelados às diferenças entre essas variáveis em diferentes períodos foi utilizado o método Kolmogorov-Smirnov para duas amostras que possui caráter não parametrico, sendo assim:\\
+\begin{center}
+$H{0}$ : Amostras seguem a mesma distribuição\\
+$H{a}$ : Amostras seguem distribuições diferentes
+\end{center}
+Posteriormente a confirmação positiva da diferença entre amostras, foi realizado o teste de aderência das amostras às distribuições cauchy, chi quadrado, exponencial, gamma, lognormal, normal, powerlaw, rayleigh, uniforme.\\
+Por último para analisar as correlações entre variáveis, foram realizadas regressões lineares e exponeciais.\\
+
+\subsection{Próxima etapa}
+Para a próxima etapa do processo, será realizada a modelagem da diferença entre chegadas (ligações) no sistema, para que posteriormente seja desenvolvida a simulação no ARENA.
