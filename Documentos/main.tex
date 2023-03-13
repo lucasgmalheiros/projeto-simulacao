@@ -16,15 +16,22 @@
 % Início do corpo do texto
 \begin{document}
 
-\input{capa.tex}
+\input{capa/capa.tex}
 
 \newpage{}
 \tableofcontents{}
 \newpage{}
 
-\input{introducao.tex}
-\input{analise_dados.tex}
+\section{Introdução}
+\input{introducao/introducao.tex}
 
+\section{Análise de dados}
+\input{analise-de-dados/anual/anual.tex}
+\input{analise-de-dados/mensal/mensal.tex}
+\input{analise-de-dados/trimestral/trimestral.tex}
+\input{analise-de-dados/semanal/semanal.tex}
 
+\section{conclusao}
+\input{conclusao/conclusao.tex}
 
 \end{document}
