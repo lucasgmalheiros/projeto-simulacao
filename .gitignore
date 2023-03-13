@@ -1,6 +1,5 @@
 # ignora todos os arquivos
 *
-/PCP/.ipynb_checkpoints
 # mantém apenas os seguintes tipos de arquivo
 !*.tex
 !*.md
@@ -15,3 +14,4 @@
 !*/
 # add gitignore
 !*.gitignore
+virtual-env
