@@ -1,7 +1,20 @@
 \subsection{Descrição do projeto}
 Na primeira etapa do projeto, foi realizada a modelagem e analíse dos dados referentes a ligações recebidas por uma central de atendimentos.\\
-Para isso, foram analísadas diferentes variáveis (data, número da ligação no dia, horário da ligação, horário de atendimento, horário de encerramento, tempo de espera, tempo de serviço) para especificados períodos (semanal, mensal, trimestral, anual). Além disso, a variável dependente relativa à diferença de tempo entre as chamadas foi adicionada para que seu comportamento fosse análisado.\\
-As variáveis importantes para a análise são: Tempo de espera, tempo de serviço e intervalo entre chamadas.\\
+Para isso, foram analísadas diferentes variáveis para que seu comportamento fosse análisado.\\
+\begin{tabular}{rlrlllrrlr}
+    \toprule
+     call\_id &    date    &  daily\_caller &     call\_started    & call\_answered & call\_ended &  wait\_length &  service\_length &  meets\_standard &  call\_type \\
+    \midrule
+       1     & 2021-01-01 &       1       & 1900-01-01 08:00:00 &   8:00:00 AM  & 8:14:22 AM &      0       &       863       &       True      &     1      \\
+       2     & 2021-01-01 &       2       & 1900-01-01 08:02:42 &   8:02:42 AM  & 8:07:31 AM &      0       &       289       &       True      &     0      \\
+       3     & 2021-01-01 &       3       & 1900-01-01 08:08:24 &   8:08:24 AM  & 8:10:13 AM &      0       &       108       &       True      &     1      \\
+       4     & 2021-01-01 &       4       & 1900-01-01 08:09:37 &   8:09:37 AM  & 8:13:45 AM &      0       &       247       &       True      &     1      \\
+       5     & 2021-01-01 &       5       & 1900-01-01 08:11:10 &   8:11:10 AM  & 8:15:28 AM &      0       &       258       &       True      &     1      \\
+    \bottomrule
+    \end{tabular}
+\\
+Acima, pode-se observar 5 ligações registradas dentro da base de dados, bem como todas as variáveis. Call\_id é a identificação da ocorrência, date é a data, daily\_caller registra as ligações num dia, call\_started, call\_answered e call\_ended são os momentos de ligação, atendimento e término das chamadas. 
+wait\_length é o tempo de espera,  service\_length é o tempo de atendimento, meets\_standard retorna verdadeiro caso o tempo de espera seja menor do que um minuto e call\_type é o tipo da ligação.\\
 Para os testes de hipóteses atrelados às diferenças entre essas variáveis em diferentes períodos foi utilizado o método Kolmogorov-Smirnov para duas amostras que possui caráter não parametrico, sendo assim:\\
 \begin{center}
 $H{0}$ : Amostras seguem a mesma distribuição\\
