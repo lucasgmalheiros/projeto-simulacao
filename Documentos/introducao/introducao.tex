@@ -6,7 +6,7 @@ Para isso, foram analísadas diferentes variáveis para que seu comportamento fo
     \caption{Banco de dados - 5 primeiras chamadas}
     \label{fig: bd_img}
 \end{figure}
-Acima, pode-se observar 5 ligações registradas dentro da base de dados, bem como todas as variáveis. Call\_id é a identificação da ocorrência, date é a data, daily\_caller registra as ligações num dia, call\_started, call\_answered e call\_ended são os momentos de ligação, atendimento e término das chamadas. 
+Na figura \ref*{fig: bd_img}, pode-se observar 5 ligações registradas dentro da base de dados, bem como todas as variáveis. Call\_id é a identificação da ocorrência, date é a data, daily\_caller registra as ligações num dia, call\_started, call\_answered e call\_ended são os momentos de ligação, atendimento e término das chamadas. 
 wait\_length é o tempo de espera,  service\_length é o tempo de atendimento, meets\_standard retorna verdadeiro caso o tempo de espera seja menor do que um minuto e call\_type é o tipo da ligação.\\
 Para os testes de hipóteses atrelados às diferenças entre essas variáveis em diferentes períodos foi utilizado o método Kolmogorov-Smirnov para duas amostras que possui caráter não parametrico, sendo assim:\\
 \begin{center}
@@ -18,3 +18,5 @@ Por último para analisar as correlações entre variáveis, foram realizadas re
 
 \subsection{Próxima etapa}
 Para a próxima etapa do processo, será realizada a modelagem da diferença entre chegadas (ligações) no sistema, para que posteriormente seja desenvolvida a simulação no ARENA.
+
+\subsection{Ferramentas utilizadas}
