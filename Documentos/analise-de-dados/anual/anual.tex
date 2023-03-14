@@ -11,7 +11,7 @@ A Figura \ref*{fig: chamados-tempo} apresenta a quantidade de chamadas recebidas
 \end{figure}
 
 \subsubsection{Análise e descrição dos tempos de espera e serviço}
-Como os tempos de espera (\textit{wait length}) e serviço (\textit{service length}) já estão calculados, podemos analisar seu comportamento. A Tabela \ref*{tab: descricao-serviço-espera} apresenta as estatística descritivas dos tempos de espera e dos tempos de serviço. É notável que a maioria dos tempos de espera (pelo menos 75\% deles) são nulos, e a média fica abaixo dos 60 segundos, no entanto, o valor máximo é muito elevado. O tempo de serviço também apresenta um valor máximo distante da média.
+Como os tempos de espera (\textit{wait length}) e serviço (\textit{service length}) já estão calculados, podemos analisar seu comportamento. A Tabela \ref*{tab: descricao-serviço-espera} apresenta as estatísticas descritivas dos tempos de espera e dos tempos de serviço. É notável que a maioria dos tempos de espera (pelo menos 75\% deles) são nulos, e a média fica abaixo dos 60 segundos, no entanto, o valor máximo é muito elevado. O tempo de serviço também apresenta um valor máximo distante da média.
 
 \begin{table}[H]
 \centering
@@ -76,7 +76,7 @@ O comportamento do tempo médio de serviço ao longo do ano pode ser visto na Fi
     \label{fig: t_servico-tempo}
 \end{figure}
 
-Para testar a hipótese que o tempo de serviço segue uma mesma distribuição ao longo do ano, foi utilizado o teste não paramétrico de Kolgomorov-Smirnov com duas amostras, testando os meses dois a dois. Os resultados estão na Figura \ref*{fig: KS_servico}. As células em verde possuem valor $p$ maior que o nível de significância adotado que é $\alpha = 5\%$, e, portanto não há diferenças estatisticamente significativas entre a distribuição dos tempos de serviço ao longo dos meses do ano.
+Para testar a hipótese que o tempo de serviço segue uma mesma distribuição ao longo do ano, foi utilizado o teste não paramétrico de Kolgomorov-Smirnov com duas amostras, testando os meses dois a dois. Os resultados estão na Figura \ref*{fig: KS_servico}. As células em verde possuem valor $p$ maior que o nível de significância adotado que é $\alpha = 5\%$, e, portanto, não há diferenças estatisticamente significativas entre a distribuição dos tempos de serviço ao longo dos meses do ano.
 
 \begin{figure}[H]
     \includegraphics[scale=0.6]{analise-de-dados/anual/ks-service.png}
@@ -99,7 +99,7 @@ O tempo médio de espera ao longo do ano é representado na Figura \ref*{fig: es
 \end{figure}
 
 \subsubsection{Fit dos tempos serviços}
-A Figura \ref*{fig: hist-servicos} apresenta o histograma dos tempos de serviço. O formato se assemelha ao de uma distribuição exponencial. Para testar a aderência de distribuições de probabilidade a essa variável aleatória é utilizada a biblioteca Fitter do Python que testa para algumas distribuições comuns utilizando o teste de Kolgomorov-Smirnov. A partir da Figura \ref*{fig: fit-servicos}, ao escolhermos a distribuição de menor erro quadrado, concluimos que o tempo de serviço pode ser modelado por uma distribuição exponencial de média 299,1 segundos.
+A Figura \ref*{fig: hist-servicos} apresenta o histograma dos tempos de serviço. O formato se assemelha ao de uma distribuição exponencial. Para testar a aderência de distribuições de probabilidade a essa variável aleatória é utilizada a biblioteca Fitter do Python que testa para algumas distribuições comuns utilizando o teste de Kolgomorov-Smirnov. A partir da Figura \ref*{fig: fit-servicos}, ao escolhermos a distribuição de menor erro quadrado, concluímos que o tempo de serviço pode ser modelado por uma distribuição exponencial de média 299,1 segundos. Não foi realizada modelagem dos tempos de espera, visto que estes não possuem duração definida e não são necessários para modelagem posterior.
 
 \begin{figure}[H]
     \includegraphics{analise-de-dados/anual/histograma-servicos.png}
@@ -184,6 +184,41 @@ A Figura \ref*{fig: spearman-test-1} contém os $p$ valores do teste de correla�
     \label{fig: spearman-test-1}
 \end{figure}
 
-% \subsection{Análise dos call types}
-% A base de dados conta com uma coluna "call\_types", com os valores 0, 1 e 2, que identificam diferentes categorias de ligações. É interessante estudar a relação entre essas variáveis para identificar possíveis diferenças entre 
+\subsection{Análise dos call types}
+A base de dados conta com uma coluna "call\_types", com os valores 0, 1 e 2, que identificam diferentes categorias de ligações. É interessante estudar a relação entre esses tipos para identificar possíveis diferenças na distribuição dos tempos de interesse entre eles. A Tabela \ref*{tab: call-type} avalia as ligações recebidas por tipo em base anual. O tipo de ligação 1 é, em média, duas vezes mais frequente que os outros dois tipos, no entanto, o percentual de falhas entre eles não é muito diferente, sendo as falhas definidas como as ligações que não atenderam os requisitos de tempo de espera inferior a 60 segundos.
 
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|r|r|r|}
+    \hline
+    \textbf{Call type} & 0 & 1 & 2 \\ \hline
+    Quantidade & 12830 & 25792 & 13086 \\ \hline
+    Falhas & 1069 & 2100 & 1058 \\ \hline
+    Percentual de falhas & 8,33\% & 8,14\% & 8,08\% \\ \hline
+    \end{tabular}
+    \caption{Status de ligações por tipo}
+    \label{tab: call-type}
+\end{table}
+    
+Foram realizados testes de Kolgomorov-Smirnov para testar a hipótese de que, para cada um dos três tipos, não há diferenças significativas entre os tempos de interesse. A Figura \ref*{fig: KS_tipos_servico} mostra os valores $p$ do teste entre os tipos para a variável aleatória de tempo de serviço. A Figura \ref*{fig: KS_tipos_chegada} mostra os valores $p$ do teste entre os tipos para a variável de tempo de chegada. Por fim, a Figura \ref*{fig: KS_tipos_espera} mostra os valores $p$ do teste entre os tipos para a variável de tempo de espera. Portanto, não houve diferença estatística entre as distribuições dos tempos de chegada, de serviço e de espera de acordo com o tipo de ligação em base anual, ja que a hipótese nula de que os valores seguem a mesma distribuição não foi rejeitada em nenhum teste.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{analise-de-dados/anual/ks-tipos-service.png}
+    \caption{$p$ valores do teste KS 2 amostras para tempos de serviço para cada tipo de ligação}
+    \label{fig: KS_tipos_servico}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{analise-de-dados/anual/ks-tipos-chegadas.png}
+    \caption{$p$ valores do teste KS 2 amostras para intervalos de chegada para cada tipo de ligação}
+    \label{fig: KS_tipos_chegada}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{analise-de-dados/anual/ks-tipos-espera.png}
+    \caption{$p$ valores do teste KS 2 amostras para tempos de espera para cada tipo de ligação}
+    \label{fig: KS_tipos_espera}
+\end{figure}
