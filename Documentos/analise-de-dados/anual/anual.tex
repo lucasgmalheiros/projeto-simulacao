@@ -80,6 +80,22 @@ Para testar a hipótese que o tempo de serviço segue uma mesma distribuição a
 
 \begin{figure}[H]
     \includegraphics[scale=0.6]{analise-de-dados/anual/ks-service.png}
-    \caption{Teste KS 2 amostras para tempos de serviço}
+    \caption{$p$ valores do teste KS 2 amostras para tempos de serviço}
     \label{fig: KS_servico}
 \end{figure}
+
+O tempo médio de espera ao longo do ano é representado na Figura \ref*{fig: espera-tempo}. A Figura \ref*{fig: KS_wait} mostra o teste de hipóteses para os tempos de espera mês a mês. É possível concluir que no início do ano (até o mês de maio), não houve diferenças significativas entre os tempos de espera. No entanto, a partir de junho, é possível atestar diferenças mais acentuadas na distribuição dos tempos de espera, representado pelos $p$ valores abaixo de 5\%, apresentado pelas células em vermelho.
+
+\begin{figure}[H]
+    \includegraphics{analise-de-dados/anual/service.png}
+    \caption{Tempos médios de espera ao longo do ano}
+    \label{fig: espera-tempo}
+\end{figure}
+
+\begin{figure}[H]
+    \includegraphics[scale=0.55]{analise-de-dados/anual/ks-wait.png}
+    \caption{$p$ valores do teste KS 2 amostras para tempos de espera}
+    \label{fig: KS_wait}
+\end{figure}
+
+\subsubsection{Fit dos tempos serviços}
