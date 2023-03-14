@@ -99,3 +99,18 @@ O tempo médio de espera ao longo do ano é representado na Figura \ref*{fig: es
 \end{figure}
 
 \subsubsection{Fit dos tempos serviços}
+A Figura \ref*{fig: hist-servicos} apresenta o histograma dos tempos de serviço. O formato se assemelha ao de uma distribuição exponencial. Para testar a aderência de distribuições de probabilidade a essa variável aleatória é utilizada a biblioteca Fitter do Python que testa para algumas distribuições comuns utilizando o teste de Kolgomorov-Smirnov. A partir da Figura \ref*{fig: fit-servicos}, ao escolhermos a distribuição de menor erro quadrado, concluimos que o tempo de serviço pode ser modelado por uma distribuição exponencial de média 299,1 segundos.
+
+\begin{figure}[H]
+    \includegraphics{analise-de-dados/anual/histograma-servicos.png}
+    \caption{Histograma dos tempos de serviço}
+    \label{fig: hist-servicos}
+\end{figure}
+
+\begin{figure}[H]
+    \includegraphics[scale=.9]{analise-de-dados/anual/fit-servicos.png}
+    \caption{Fit dos dados às distribuições de probabilidade}
+    \label{fig: fit-servicos}
+\end{figure}
+
+\subsection{Análise dos tempos entre chegadas das ligações}
