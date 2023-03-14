@@ -113,4 +113,77 @@ A Figura \ref*{fig: hist-servicos} apresenta o histograma dos tempos de serviço
     \label{fig: fit-servicos}
 \end{figure}
 
-\subsection{Análise dos tempos entre chegadas das ligações}
+\subsubsection{Análise dos tempos entre chegadas das ligações}
+Para modelar os intervalos entre chegadas no Arena é necessário subtrair os intervalos entre chegadas das ligações em um mesmo dia. Dessa operação resulta a coluna "arrival\_time\_diff", na Figura \ref*{fig: df-intervalos}, que é colocada na base de dados. \\
+O histograma dos intervalos de chegada na Figura \ref*{fig: hist-intervalos} também se assemelha a uma distribuição exponencial.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{analise-de-dados/anual/df-arrivals.png}
+    \caption{Coluna de intervalos entre chegadas - 5 primeiros valores}
+    \label{fig: df-intervalos}
+\end{figure}
+
+\begin{figure}[H]
+    \includegraphics{analise-de-dados/anual/hist-intervalos.png}
+    \caption{Histograma dos intervalos entre chegadas}
+    \label{fig: hist-intervalos}
+\end{figure}
+
+A Figura \ref*{fig: arrivals-tempo} apresenta a variável de intervalo entre chegadas ao longo do ano, que demonstra tendência de queda com o passar do tempo. Essa observação está de acordo com a Figura \ref*{fig: chamados-tempo} que mostra aumento do número de ligações ao longo do ano. 
+
+\begin{figure}[H]
+    \includegraphics{analise-de-dados/anual/arrivals-tempo.png}
+    \caption{Tempo entre chegadas ao longo do tempo}
+    \label{fig: arrivals-tempo}
+\end{figure}
+
+É interessante notar que mesmo para meses subsequentes, o teste de Kolgomogorov-Smirnov de 2 amostras resumido na Figura \ref*{fig: ks-arrivals} rejeita a hipótese de que a distribuição dos tempos de chegada entre eles seja idêntica. Isso indica que não é viável agregar períodos maiores que um mês para modelagem das chegadas. Os valores em vermelho são aqueles nos quais o teste rejeitou a hipótese nula, e, portanto, há diferenças significativas de distribuições de probabilidade entre os meses. Portanto, não é viável modelar a variável de intervalo entre chegadas utilizando uma única distribuição de probabilidade para todo o ano.\\
+A Tabela \ref*{tab: descricao-arrivals} apresenta a estatística descritiva desses intervalos entre chegadas.
+
+\begin{figure}[H]
+    \includegraphics[scale=0.6]{analise-de-dados/anual/ks-arrivals.png}
+    \caption{$p$ valores do teste KS 2 amostras para tempos de serviço}
+    \label{fig: ks-arrivals}
+\end{figure}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lr}
+        % \begin{center}
+            \toprule
+            {} &  Intervalos entre chegadas \\
+            \midrule
+            count &   51708.000  \\
+            mean  &      179.668  \\
+            std   &      188.007  \\
+            min   &       0.000  \\
+            25\%   &       49.000  \\
+            50\%   &       121.000  \\
+            75\%   &       246.000  \\
+            max   &     2718.000  \\
+        \bottomrule
+        \end{tabular}
+    \caption{Estatística descritiva dos tempos entre chegadas}
+    \label{tab: descricao-arrivals}
+\end{table}
+
+\subsubsection{Teste de correlação entre os tempos estudados}
+Para testar a correlação utilizamos a correlação de Spearman, por se tratar de um teste não paramétrico, visto que estamos trabalhando com variáveis que não seguem a distribuição normal. A Figura \ref*{fig: corr-spearman-1} mostra os coeficientes de correlação obtidos.\\
+A Figura \ref*{fig: spearman-test-1} contém os $p$ valores do teste de correlação de Spearman para as variáveis aleatórias estudadas. Como a hipótese nula do teste é que não há correlação, temos rejeição da hipótese nula apenas para a correlação entre os intervalos de chegada ("arrival\_time\_diff") e os tempos de espera ("wait\_length"), com valor $p$ menor que 5\%. Assim, como o tempo de serviço não varia ao longo do ano, o aumento do tempo de espera é explicado pela redução do intervalo entre chegadas, e pelo consequente aumento do número de chamadas diário ao longo do ano.
+
+\begin{figure}[H]
+    \includegraphics{analise-de-dados/anual/corr-spearman.png}
+    \caption{Coeficientes de correlação de Spearman entre os tempos}
+    \label{fig: corr-spearman-1}
+\end{figure}
+
+\begin{figure}[H]
+    \includegraphics{analise-de-dados/anual/spearman-test.png}
+    \caption{Testes de correlação entre as variáveis}
+    \label{fig: spearman-test-1}
+\end{figure}
+
+% \subsection{Análise dos call types}
+% A base de dados conta com uma coluna "call\_types", com os valores 0, 1 e 2, que identificam diferentes categorias de ligações. É interessante estudar a relação entre essas variáveis para identificar possíveis diferenças entre 
+
