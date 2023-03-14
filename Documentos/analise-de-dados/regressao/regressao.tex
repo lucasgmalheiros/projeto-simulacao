@@ -18,4 +18,44 @@ Depois, as chamadas foram classificadas por dia, e, assim, calculado o tempo de 
     \label{fig: tempos_de_chegada}
 \end{figure}
 
-A partir dessa percepção, são, então, propostos alguns estudos de regressão mais particulares para representar a tendência dos dados. Um usando "Ordinary Least Squares", outro usando "Generalized Least Squares" e uma regressão exponencial.  
+A partir dessa percepção, são, então, propostos alguns estudos de regressão mais particulares para representar a tendência dos dados. Um usando "Ordinary Least Squares" e uma regressão exponencial.  
+
+\subsection{Ordinary Least Squares}
+
+Utilizando a biblioteca statsmodel do python foi realizado o estudo de regressão. A Equação Obtida foi: $$intervalos(t) = -0,4933 \cdot t + 252,6629$$. O resumo da regressão e o plot podem ser colocados a seguir: 
+
+\begin{figure}[H]
+    \includegraphics{analise-de-dados/regressao/regressao_OLS.png}
+    \caption{Regressão Linear para os tempos de espera}
+    \label{fig: plot_OLS}
+\end{figure}
+
+\begin{figure}[H]
+    \includegraphics[scale = 0.85]{analise-de-dados/regressao/OLS_summary.jpg}
+    \caption{Resumo da regressão}
+    \label{fig: sum_OLS}
+\end{figure}
+
+Temos que os valores p são menores que o nível de significância adotado, e, portanto, o modelo de regressão existe. Entretanto, para os dias em que $t > 512$ o tempo de chegada das chamadas seria negativo, o que levanta questões sobre se este método de regressão é aplicável para modelar o tempo entre as chamadas.
+
+\subsection{OLS exponencial}
+
+De maneira semelhante ao primeiro estudo, este também foi feito utilizando a biblioteca statsmodel. Entretanto, ao invés dos parâmetros para a regressão terem sido adicionados como são ao modelo, ele foi construído usando: $$ln(y) = ln(b) + a \cdot x$$
+
+Dessa maneira, a equação obtida para representar os dados foi:
+$$intervalos(t) = 260,9424 \cdot e^{-0,0027x} $$
+
+O resumo e o gráfico da regressão estão nas imagens 10 e 11:
+\begin{figure}[H]
+    \includegraphics{analise-de-dados/regressao/regressao_EXPO.png}
+    \caption{Regressão Exponencial para os tempos de espera}
+    \label{fig: plot_Expo_OLS}
+\end{figure}
+
+\begin{figure}[H]
+    \includegraphics[scale = 0.85]{analise-de-dados/regressao/EXPO_OLS_Summary.jpg}
+    \caption{Resumo da regressão}
+    \label{fig: sum_Expo_OLS}
+\end{figure}
+
+Para Este caso, a explicabilidade do modelo aumentou e o problema que antes existia já não mais existe. Como os Valores P seguem menores do que 0, o modelo existe e pode ser usado.
