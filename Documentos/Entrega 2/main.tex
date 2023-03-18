@@ -1,0 +1,40 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{newtxtext} % Times New Roman
+\usepackage[top=3cm, bottom=2cm, left=3cm, right=2cm]{geometry}
+\usepackage{ragged2e}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{makeidx}
+\usepackage{graphicx}
+\usepackage{afterpage}
+\usepackage{booktabs}
+\usepackage{float}
+\makeindex % Criar índice depois
+
+
+% Início do corpo do texto
+\begin{document}
+
+\input{capa/capa.tex}
+
+\newpage{}
+\tableofcontents{}
+\newpage{}
+
+\section{Introdução}
+\input{introducao/introducao.tex}
+
+\section{Análise de dados}
+\input{analise-de-dados/anual/anual.tex}
+\input{analise-de-dados/mensal/mensal.tex}
+\input{analise-de-dados/trimestral/trimestral.tex}
+\input{analise-de-dados/semanal/semanal.tex}
+\input{analise-de-dados/regressao/regressao.tex}
+
+\section{Conclusão}
+\input{conclusao/conclusao.tex}
+
+\end{document}
