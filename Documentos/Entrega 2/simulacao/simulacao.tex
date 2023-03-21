@@ -71,7 +71,7 @@ Foi realizado um redimensionamento do número de replicações para tentar compr
     \label{fig: dimensionamento-corridas}
 \end{table}
     
-Executando a validação do modelo com 100 replicações para cada mês, temos na Tabela \ref*{fig: teste-modelo-historico-100} os valores $p$ da comparação das amostras dos meses simulados aos valores históricos, além do percentual médio de falhas em cada mês da simulação. Neste caso, nenhum $p$ valor ficou abaixo do nível de signficância estipulado de 5\%, comprovando que o modelo é bom o suficiente para representar o comportamento dos dados reais em cada um dos meses.
+Executando a validação do modelo com 100 replicações para cada mês, temos na Tabela \ref*{fig: teste-modelo-historico-100} os valores $p$ da comparação das amostras dos meses simulados aos valores históricos, além do percentual médio de falhas em cada mês da simulação, definido como a porcentagem de ligações que levaram mais de 1 minuto para serem atendidas. Neste caso, nenhum $p$ valor ficou abaixo do nível de signficância estipulado de 5\%, comprovando que o modelo é bom o suficiente para representar o comportamento dos dados reais em cada um dos meses.
 
 \begin{table}[H]
     \centering
@@ -95,4 +95,19 @@ Executando a validação do modelo com 100 replicações para cada mês, temos n
     \label{fig: teste-modelo-historico-100}
 \end{table}
     
+\subsection{Teste de capacidade da central de atendimentos}
+Para avaliar o volume máximo de chamadas que podem ser atendidas sem violar a meta de 90\% das chamadas atendidas em até 1 minuto, isto é, trabalhando com menos de 10\% de falhas, podemos utilizar o modelo de simulação com distribuição dos intervalos entre chegadas próximos do valor modelado para o mês de setembro, no qual o sistema deixa de cumprir a meta, e cuja média do tempo entre chegadas é de 156,4994 segundos. A Tabela \ref{tab: stress-test} apresenta os testes realizados para avaliação da capacidade, executando 100 replicações para cada tempo entre chegadas testado. O volume máximo que pode ser tratado por dia é, em média, 229 chamadas.
 
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|r|r|r|}
+    \hline
+    \multicolumn{1}{|l|}{Tempo médio entre chegadas (s)} & \multicolumn{1}{l|}{Quantidade média de chegadas} & \multicolumn{1}{l|}{\% falha} \\ \hline
+    160 & 225,14 & 9,64\% \\ \hline
+    159 & 226,6 & 9,67\% \\ \hline
+    158 & 228,15 & 9,88\% \\ \hline
+    157 & 229,59 & 10,11\% \\ \hline
+    \end{tabular}
+    \caption{Resultados do teste de capacidade da central de atendimento}
+    \label{tab: stress-test}
+ \end{table}
