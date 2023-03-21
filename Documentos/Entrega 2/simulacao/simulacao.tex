@@ -46,8 +46,7 @@ Para validação do modelo foram realizados testes de hipóteses utilizando o te
 \end{table}
     
     
-Foi realizado um redimensionamento do número de replicações para tentar compreender a rejeição dos valores obtidos para tempos de serviço. A Tabela \ref*{fig: intervalo-confianca} apresenta, para o mês de dezembro, os intervalos de confiança dos tempos obtidos com 5\% de signficância. Para aumentar a precisão dos tempos de serviço, que apresentam maior variância e foram rejeitados no teste de hipótese, foi dimensionado o número de amostras necessárias ($n^*$) para uma precisão desejada ($h^*$) de 3,5 segundos, conforme Tabela \ref*{fig: dimensionamento-corridas}. Como cada replicação deste mês tem em média 270 chamadas, consideramos o valor de 100 replicações para atingir o número de amostras calculado.\\
-Refazendo os experimentos de simulacao com os mesmos parâmetros mas aumentando o número de replicações para 100 em cada mês, temos 
+Foi realizado um redimensionamento do número de replicações para tentar compreender a rejeição dos valores obtidos para tempos de serviço. A Tabela \ref*{fig: intervalo-confianca} apresenta, para o mês de dezembro, os intervalos de confiança dos tempos obtidos com 5\% de signficância. Para aumentar a precisão dos tempos de serviço, que apresentam maior variância e foram rejeitados no teste de hipótese, foi dimensionado o número de amostras necessárias ($n^*$) para uma precisão desejada ($h^*$) de 3,5 segundos, conforme Tabela \ref*{fig: dimensionamento-corridas}. Como cada replicação deste mês tem em média 270 chamadas, consideramos o valor de 100 replicações para atingir o número de amostras calculado.
 
 \begin{table}[H]
     \begin{tabular}{|l|r|r|r|r|r|r|r|r|r|}
@@ -72,7 +71,28 @@ Refazendo os experimentos de simulacao com os mesmos parâmetros mas aumentando 
     \label{fig: dimensionamento-corridas}
 \end{table}
     
-Executando a validação do modelo com 100 replicações para cada mês, temos na Tabela \ref*{label} os valores $p$ da comparação das amostras dos meses simulados aos valores históricos.
+Executando a validação do modelo com 100 replicações para cada mês, temos na Tabela \ref*{fig: teste-modelo-historico-100} os valores $p$ da comparação das amostras dos meses simulados aos valores históricos, além do percentual médio de falhas em cada mês da simulação. Neste caso, nenhum $p$ valor ficou abaixo do nível de signficância estipulado de 5\%, comprovando que o modelo é bom o suficiente para representar o comportamento dos dados reais em cada um dos meses.
 
-
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|r|r|r|r|r|}
+    \hline
+     & \multicolumn{1}{l|}{wait\_length} & \multicolumn{1}{l|}{service\_length} & \multicolumn{1}{l|}{arrival\_time\_diff} & \multicolumn{1}{l|}{Replicações} & \multicolumn{1}{l|}{\% médio de falhas} \\ \hline
+    Janeiro & 1 & 0,3175 & 0,311 & 100 & 2,33\% \\ \hline
+    Fevereiro & 1 & 0,3135 & 0,0561 & 100 & 2,67\% \\ \hline
+    Março & 1 & 0,5948 & 0,685 & 100 & 3,11\% \\ \hline
+    Abril & 0,8847 & 0,1727 & 0,0609 & 100 & 3,67\% \\ \hline
+    Maio & 1 & 0,561 & 0,3087 & 100 & 4,14\% \\ \hline
+    Junho & 1 & 0,4937 & 0,7136 & 100 & 4,73\% \\ \hline
+    Julho & 1 & 0,7783 & 0,5795 & 100 & 5,94\% \\ \hline
+    Agosto & 0,8023 & 0,6972 & 0,548 & 100 & 7,34\% \\ \hline
+    Setembro & 0,971 & 0,8679 & 0,5704 & 100 & 10,27\% \\ \hline
+    Outubro & 0,9968 & 0,2854 & 0,8972 & 100 & 11,93\% \\ \hline
+    Novembro & 0,148 & 0,7403 & 0,0843 & 100 & 14,59\% \\ \hline
+    Dezembro & 0,0719 & 0,6286 & 0,2675 & 100 & 18,17\% \\ \hline
+    \end{tabular}
+    \caption{Valores $p$ dos testes de validação dos tempos do modelo realizando 100 replicações}
+    \label{fig: teste-modelo-historico-100}
+\end{table}
+    
 
