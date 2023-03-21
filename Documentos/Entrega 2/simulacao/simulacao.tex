@@ -21,7 +21,7 @@ A estrutura do arquivo de saída do Arena pode ser vista na Figura \ref*{fig: cs
 \end{figure}
 
 \subsection{Validação do modelo}
-Para validação do modelo foram realizados testes de hipóteses utilizando o teste de Kolgomogorov-Smirnov de 2 amostras para determinar se os valores simulados estão de acordo com os valores históricos. A Tabela \ref*{fig: teste-modelo-historico} apresenta os valores $p$ calculados para cada mês, comparando as amostras dos meses simulados aos valores registrados, assim como o número de replicações aplicado na criação de cada amostra da simulação. Há a rejeição da hipótese nula em três tempos de serviço modelados (valor $p < 0,05$), nos meses de fevereiro, outubro e dezembro.
+Para validação do modelo foram realizados testes de hipóteses utilizando o teste de Kolmogorov-Smirnov de 2 amostras para determinar se os valores simulados estão de acordo com os valores históricos. A Tabela \ref*{fig: teste-modelo-historico} apresenta os valores $p$ calculados para cada mês, comparando as amostras dos meses simulados aos valores registrados, assim como o número de replicações aplicado na criação de cada amostra da simulação. Há a rejeição da hipótese nula em três tempos de serviço modelados (valor $p < 0,05$), nos meses de fevereiro, outubro e dezembro.
 
 \begin{table}[H]
     \centering
@@ -46,7 +46,7 @@ Para validação do modelo foram realizados testes de hipóteses utilizando o te
 \end{table}
     
     
-Foi realizado um redimensionamento do número de replicações para tentar compreender a rejeição dos valores obtidos para tempos de serviço. A Tabela \ref*{fig: intervalo-confianca} apresenta, para o mês de dezembro, os intervalos de confiança dos tempos obtidos com 5\% de signficância. Para aumentar a precisão dos tempos de serviço, que apresentam maior variância e foram rejeitados no teste de hipótese, foi dimensionado o número de amostras necessárias ($n^*$) para uma precisão desejada ($h^*$) de 3,5 segundos, conforme Tabela \ref*{fig: dimensionamento-corridas}. Como cada replicação deste mês tem em média 270 chamadas, consideramos o valor de 100 replicações para atingir o número de amostras calculado.
+Foi realizado um redimensionamento do número de replicações para tentar compreender a rejeição dos valores obtidos para tempos de serviço. A Tabela \ref*{fig: intervalo-confianca} apresenta, para o mês de dezembro, os intervalos de confiança dos tempos obtidos com 5\% de significância. Para aumentar a precisão dos tempos de serviço, que apresentam maior variância e foram rejeitados no teste de hipótese, foi dimensionado o número de amostras necessárias ($n^*$) para uma precisão desejada ($h^*$) de 3,5 segundos, conforme Tabela \ref*{fig: dimensionamento-corridas}. Como cada replicação deste mês tem em média 270 chamadas, consideramos o valor de 100 replicações para atingir o número de amostras calculado.
 
 \begin{table}[H]
     \begin{tabular}{|l|r|r|r|r|r|r|r|r|r|}
@@ -71,7 +71,7 @@ Foi realizado um redimensionamento do número de replicações para tentar compr
     \label{fig: dimensionamento-corridas}
 \end{table}
     
-Executando a validação do modelo com 100 replicações para cada mês, temos na Tabela \ref*{fig: teste-modelo-historico-100} os valores $p$ da comparação das amostras dos meses simulados aos valores históricos, além do percentual médio de falhas em cada mês da simulação, definido como a porcentagem de ligações que levaram mais de 1 minuto para serem atendidas. Neste caso, nenhum $p$ valor ficou abaixo do nível de signficância estipulado de 5\%, comprovando que o modelo é bom o suficiente para representar o comportamento dos dados reais em cada um dos meses.
+Executando a validação do modelo com 100 replicações para cada mês, temos na Tabela \ref*{fig: teste-modelo-historico-100} os valores $p$ da comparação das amostras dos meses simulados aos valores históricos, além do percentual médio de falhas em cada mês da simulação, definido como a porcentagem de ligações que levaram mais de 1 minuto para serem atendidas. Neste caso, nenhum $p$ valor ficou abaixo do nível de significância estipulado de 5\%, comprovando que o modelo é bom o suficiente para representar o comportamento dos dados reais em cada um dos meses.
 
 \begin{table}[H]
     \centering
