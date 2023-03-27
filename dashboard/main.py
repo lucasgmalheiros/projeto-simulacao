@@ -137,11 +137,11 @@ def update_kpis(date):
     # Gráficos para cada um dos KPIS
     mes = df.loc[df["date"].dt.month == datetime.strptime(date, '%Y-%m-%d').month]
     # percentual 
-    percent_graph = px.bar(mes.groupby(["date"]), x = mes["date"].unique(),y = round(mes.groupby(["date"])["meets_standard"].mean(),2))
+    percent_graph = px.bar(mes.groupby(["date"]), x = mes["date"].unique(),y = round(mes.groupby(["date"])["meets_standard"].mean(),2), height = 275)
 
     # numero de atendimentos 
     
-    callers_graph = px.bar(mes.groupby(["date"]), x = mes["date"].unique(), y = mes.groupby(["date"])["daily_caller"].max())
+    callers_graph = px.bar(mes.groupby(["date"]), x = mes["date"].unique(), y = mes.groupby(["date"])["daily_caller"].max(), height = 275)
     #atendimentos = px.bar(media_atendimento, x = date, y = )
 
     # Retorna os valores
