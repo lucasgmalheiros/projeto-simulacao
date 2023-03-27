@@ -105,9 +105,9 @@ app.layout = dbc.Container([
      Output("output-media-atendimento", "children"),
      Output("output-media-espera", "children"),
      Output("output-percent-desistencia", "children"),
-     Output("output-utilizacao", "children")],
+     Output("output-utilizacao", "children"),
      Output("grafico-percentil","figure"),
-     Output("grafico-chamados","figure"),
+     Output("grafico-chamados","figure")],
     [Input("my-date-picker", "date")]
 )
 def update_kpis(data):
@@ -118,11 +118,11 @@ def update_kpis(data):
     # Chamados por dia
     callers = df.groupby(["date"])["daily_caller"].max()[data]
     # Média tempo de atendimento
-    media_atendimento = df.groupby(["date"])["service_length"].mean()[date]
+    media_atendimento = df.groupby(["date"])["service_length"].mean()[data]
     media_atendimento = strftime("%M:%S", gmtime(media_atendimento)) 
     
         # Média tempo de espera
-    media_espera = df.groupby(["date"])["wait_length"].mean()[date]
+    media_espera = df.groupby(["date"])["wait_length"].mean()[data]
     media_espera = strftime("%M:%S", gmtime(media_espera))
     # Taxa de desistência
     if len(dff) > 0:
@@ -136,7 +136,7 @@ def update_kpis(data):
     utilizacao = dff["service_length"].sum() / horas_disponiveis
 
     # Gráficos para cada um dos KPIS
-    mes = df.loc[df["date"].dt.month == datetime.strptime(date, '%Y-%m-%d').month]
+    mes = df.loc[df["date"].dt.month == datetime.strptime(data, '%Y-%m-%d').month]
     # percentual 
     percent_graph = px.bar(mes.groupby(["date"]), x = mes["date"].unique(),y = round(mes.groupby(["date"])["meets_standard"].mean(),2), height = 275)
 
