@@ -5,10 +5,7 @@ import numpy as np
 
 
 def clean_original_data(df):
-    """
-    Realiza o tratamento do dataframe para converter as datas e calcular
-    tempos entre chegadas.
-    """
+    """Realiza o tratamento do dataframe original."""
     # Conversão do time stamp da data
     df["date"] = pd.to_datetime(df.date, format="%d/%m/%Y")
     df["call_started"] = pd.to_datetime(df.call_started, format="%I:%M:%S %p")
@@ -27,6 +24,7 @@ def clean_original_data(df):
 
 
 def clean_arena_data(df):
+    """Tratamento do arquivo .csv do Arena."""
     # Removendo coluna fantasma
     df = df.drop('Unnamed: 5', axis=1)
 
