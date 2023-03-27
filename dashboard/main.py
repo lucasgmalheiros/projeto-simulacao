@@ -20,10 +20,6 @@ df = clean_original_data(df)
 print(df.head())
 
 # --------------------------------------------------------------------------- #
-# Build the scatter plot
-# fig = px.scatter(data_frame=df)
-
-# --------------------------------------------------------------------------- #
 # Layout do app
 app.layout = dbc.Container([
     # Linha 1 - Header
@@ -116,7 +112,7 @@ def update_kpis(date):
     media_espera = strftime("%M:%S", gmtime(media_espera))
     # Taxa de desistência
     if len(dff) > 0:
-        taxa_desistencia = len(df.loc[(df["service_length"] < 15) & (df["date"] == date)]) / len(dff)
+        taxa_desistencia = len(df.loc[(df["service_length"] < 30) & (df["date"] == date)]) / len(dff)
     else:
         taxa_desistencia = 0
     # Percentual de utilização
