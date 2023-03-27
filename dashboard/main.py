@@ -38,7 +38,8 @@ app.layout = dbc.Container([
                 min_date_allowed=min(df["date"]),
                 max_date_allowed=max(df["date"]),
                 initial_visible_month=max(df["date"]),
-                date=max(df["date"])
+                date=max(df["date"]),
+                display_format='DD/MM/Y'
             ), width=6, className="text-center"),
         dbc.Col(
             dcc.Slider(
@@ -50,13 +51,13 @@ app.layout = dbc.Container([
     dbc.Row([
         dbc.Col(
             dbc.Card(
-                [dbc.CardHeader(html.H2("Atendimento em até 1 minuto (%)")),
-                 dbc.CardBody(html.H3(id="output-percent-atendimento"))]
+                [dbc.CardHeader(html.H3("Atendimento em até 1 minuto (%)")),
+                 dbc.CardBody(html.H2(id="output-percent-atendimento"))]
                     ), width=6, className="text-center"),
         dbc.Col(
             dbc.Card(
-                [dbc.CardHeader(html.H2("Número de chamados no dia")),
-                 dbc.CardBody(html.H3(id="output-chamados"))]
+                [dbc.CardHeader(html.H3("Número de chamados no dia")),
+                 dbc.CardBody(html.H2(id="output-chamados"))]
                     ), width=6, className="text-center"),
     ]),
     #linha 3.5 - Gráficos e picker de gráficos para cada um dos KPIS
@@ -69,26 +70,26 @@ app.layout = dbc.Container([
     dbc.Row([
         dbc.Col(
             dbc.Card(
-                [dbc.CardHeader(html.H2("Tempo médio de atendimento (min)")),
-                 dbc.CardBody(html.H3(id="output-media-atendimento"))]
+                [dbc.CardHeader(html.H3("Tempo médio de atendimento (min)")),
+                 dbc.CardBody(html.H2(id="output-media-atendimento"))]
                     ), width=6, className="text-center"),
         dbc.Col(
             dbc.Card(
-                [dbc.CardHeader(html.H2("Tempo médio de espera (min)")),
-                 dbc.CardBody(html.H3(id="output-media-espera"))]
+                [dbc.CardHeader(html.H3("Tempo médio de espera (min)")),
+                 dbc.CardBody(html.H2(id="output-media-espera"))]
                     ), width=6, className="text-center"),
     ]),
     # Linha 5 - Taxa de abandono ("service_length" < 30s)
     dbc.Row([
         dbc.Col(
             dbc.Card(
-                [dbc.CardHeader(html.H2("Taxa de desistência (%)")),
-                 dbc.CardBody(html.H3(id="output-percent-desistencia"))]
+                [dbc.CardHeader(html.H3("Taxa de desistência (%)")),
+                 dbc.CardBody(html.H2(id="output-percent-desistencia"))]
                     ), width=6, className="text-center"),
         dbc.Col(
             dbc.Card(
-                [dbc.CardHeader(html.H2("Utilização operadores (%)")),
-                 dbc.CardBody(html.H3(id="output-utilizacao"))]
+                [dbc.CardHeader(html.H3("Utilização operadores (%)")),
+                 dbc.CardBody(html.H2(id="output-utilizacao"))]
                     ), width=6, className="text-center"),
     ]),
 ], className="mt-3")
@@ -109,13 +110,13 @@ app.layout = dbc.Container([
      Output("grafico-chamados","figure"),
     [Input("my-date-picker", "date")]
 )
-def update_kpis(date):
+def update_kpis(data):
     """Calcula os KPIs de acordo com a data."""
     # Percentual atendido em até 1 minuto
-    dff = df.loc[df["date"] == date]
+    dff = df.loc[df["date"] == data]
     percent = dff["meets_standard"].mean()
     # Chamados por dia
-    callers = df.groupby(["date"])["daily_caller"].max()[date]
+    callers = df.groupby(["date"])["daily_caller"].max()[data]
     # Média tempo de atendimento
     media_atendimento = df.groupby(["date"])["service_length"].mean()[date]
     media_atendimento = strftime("%M:%S", gmtime(media_atendimento)) 
@@ -126,7 +127,7 @@ def update_kpis(date):
     # Taxa de desistência
     if len(dff) > 0:
         taxa_desistencia = len(df.loc[(df["service_length"] < 30) &
-                                      (df["date"] == date)]) / len(dff)
+                                      (df["date"] == data)]) / len(dff)
     else:
         taxa_desistencia = 0
     # Percentual de utilização
