@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 import dash
 import dash_bootstrap_components as dbc
 from dash import dcc, html, Input, Output, callback
-from datetime import date, datetime
+# from datetime import date, datetime
 from time import gmtime, strftime
 from df_manipulation import clean_original_data, clean_arena_data
 
@@ -20,10 +20,6 @@ df = pd.read_csv("https://raw.githubusercontent.com/lucasgmalheiros"
 
 df = clean_original_data(df)
 print(df.head())
-
-# --------------------------------------------------------------------------- #
-# Build the scatter plot
-# fig = px.scatter(data_frame=df)
 
 # --------------------------------------------------------------------------- #
 # Layout do app
@@ -113,7 +109,7 @@ app.layout = dbc.Container([
     [Input("my-date-picker", "date")]
 )
 def update_kpis(date):
-    print(date)
+    """Calcula os KPIs de acordo com a data."""
     # Percentual atendido em até 1 minuto
     dff = df.loc[df["date"] == date]
     percent = dff["meets_standard"].mean()
@@ -128,7 +124,8 @@ def update_kpis(date):
     media_espera = strftime("%M:%S", gmtime(media_espera))
     # Taxa de desistência
     if len(dff) > 0:
-        taxa_desistencia = len(df.loc[(df["service_length"] < 15) & (df["date"] == date)]) / len(dff)
+        taxa_desistencia = len(df.loc[(df["service_length"] < 30) &
+                                      (df["date"] == date)]) / len(dff)
     else:
         taxa_desistencia = 0
     # Percentual de utilização
