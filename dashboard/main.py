@@ -10,12 +10,14 @@ from time import gmtime, strftime
 from df_manipulation import clean_original_data, clean_arena_data
 
 
+
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 # --------------------------------------------------------------------------- #
 # Base de dados reais de 2021
 df = pd.read_csv("https://raw.githubusercontent.com/lucasgmalheiros"
                  "/projeto-simulacao-VCBC/main/calls.csv")
+
 df = clean_original_data(df)
 print(df.head())
 
@@ -60,6 +62,12 @@ app.layout = dbc.Container([
                  dbc.CardBody(html.H3(id="output-chamados"))]
                     ), width=6, className="text-center"),
     ]),
+    #linha 3.5 - Gráficos e picker de gráficos para cada um dos KPIS
+    dbc.Row([
+        dbc.Col(dcc.Graph(id="grafico-percentil")),
+        dbc.Col(dcc.Graph(id="grafico-chamados")),
+    ]),    
+
     # Linha 4 - KPIs de tempo médio de atendimento
     dbc.Row([
         dbc.Col(
@@ -100,9 +108,12 @@ app.layout = dbc.Container([
      Output("output-media-espera", "children"),
      Output("output-percent-desistencia", "children"),
      Output("output-utilizacao", "children")],
+     Output("grafico-percentil","figure"),
+     Output("grafico-chamados","figure"),
     [Input("my-date-picker", "date")]
 )
 def update_kpis(date):
+    print(date)
     # Percentual atendido em até 1 minuto
     dff = df.loc[df["date"] == date]
     percent = dff["meets_standard"].mean()
@@ -110,8 +121,9 @@ def update_kpis(date):
     callers = df.groupby(["date"])["daily_caller"].max()[date]
     # Média tempo de atendimento
     media_atendimento = df.groupby(["date"])["service_length"].mean()[date]
-    media_atendimento = strftime("%M:%S", gmtime(media_atendimento))
-    # Média tempo de espera
+    media_atendimento = strftime("%M:%S", gmtime(media_atendimento)) 
+    
+        # Média tempo de espera
     media_espera = df.groupby(["date"])["wait_length"].mean()[date]
     media_espera = strftime("%M:%S", gmtime(media_espera))
     # Taxa de desistência
@@ -123,10 +135,22 @@ def update_kpis(date):
     n_atendentes = 4
     horas_disponiveis = 10 * 60 * 60 * n_atendentes
     utilizacao = dff["service_length"].sum() / horas_disponiveis
+
+    # Gráficos para cada um dos KPIS
+    mes = df.loc[df["date"].dt.month == datetime.strptime(date, '%Y-%m-%d').month]
+    # percentual 
+    percent_graph = px.bar(mes.groupby(["date"]), x = mes["date"].unique(),y = round(mes.groupby(["date"])["meets_standard"].mean(),2))
+
+    # numero de atendimentos 
+    
+    callers_graph = px.bar(mes.groupby(["date"]), x = mes["date"].unique(), y = mes.groupby(["date"])["daily_caller"].max())
+    #atendimentos = px.bar(media_atendimento, x = date, y = )
+
     # Retorna os valores
     return (f"{percent * 100 :.2f}%", f"{callers}",
             f"{media_atendimento}", f"{media_espera}",
-            f"{taxa_desistencia * 100 :.2f}%", f"{utilizacao * 100 :.2f}%")
+            f"{taxa_desistencia * 100 :.2f}%", f"{utilizacao * 100 :.2f}%",
+            percent_graph, callers_graph)
 
 
 # --------------------------------------------------------------------------- #
