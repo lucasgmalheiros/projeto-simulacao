@@ -60,7 +60,7 @@ app.layout = dbc.Container([
                  dbc.CardBody(html.H3(id="output-chamados"))]
                     ), width=6, className="text-center"),
     ]),
-    # Linha 4 - KPIs de tempo médio de atendimento
+    # Linha 4 - KPIs de tempo médio de atendimento 
     dbc.Row([
         dbc.Col(
             dbc.Card(
@@ -80,11 +80,11 @@ app.layout = dbc.Container([
                 [dbc.CardHeader(html.H2("Taxa de desistência (%)")),
                  dbc.CardBody(html.H3(id="output-percent-desistencia"))]
                     ), width=6, className="text-center"),
-        dbc.Col(
-            dbc.Card(
-                [dbc.CardHeader(html.H2("Utilização operadores (%)")),
-                 dbc.CardBody(html.H3(id="output-utilizacao"))]
-                    ), width=6, className="text-center"),
+        # dbc.Col(
+        #     dbc.Card(
+        #         [dbc.CardHeader(html.H2("Tempo médio de espera (min)")),
+        #          dbc.CardBody(html.H3(id="output-media-espera"))]
+        #             ), width=6, className="text-center"),
     ]),
 ], className="mt-3")
 
@@ -97,14 +97,13 @@ app.layout = dbc.Container([
     [Output("output-percent-atendimento", "children"),
      Output("output-chamados", "children"),
      Output("output-media-atendimento", "children"),
-     Output("output-media-espera", "children"),
-     Output("output-percent-desistencia", "children"),
-     Output("output-utilizacao", "children")],
+     Output("output-media-espera", "children")],
     [Input("my-date-picker", "date")]
 )
 def update_kpis(date):
+    # df = df.copy()
     # Percentual atendido em até 1 minuto
-    dff = df.loc[df["date"] == date]
+    dff = df[df["date"] == date]
     percent = dff["meets_standard"].mean()
     # Chamados por dia
     callers = df.groupby(["date"])["daily_caller"].max()[date]
@@ -114,19 +113,8 @@ def update_kpis(date):
     # Média tempo de espera
     media_espera = df.groupby(["date"])["wait_length"].mean()[date]
     media_espera = strftime("%M:%S", gmtime(media_espera))
-    # Taxa de desistência
-    if len(dff) > 0:
-        taxa_desistencia = len(df.loc[(df["service_length"] < 15) & (df["date"] == date)]) / len(dff)
-    else:
-        taxa_desistencia = 0
-    # Percentual de utilização
-    n_atendentes = 4
-    horas_disponiveis = 10 * 60 * 60 * n_atendentes
-    utilizacao = dff["service_length"].sum() / horas_disponiveis
-    # Retorna os valores
     return (f"{percent * 100 :.2f}%", f"{callers}",
-            f"{media_atendimento}", f"{media_espera}",
-            f"{taxa_desistencia * 100 :.2f}%", f"{utilizacao * 100 :.2f}%")
+            f"{media_atendimento}", f"{media_espera}")
 
 
 # --------------------------------------------------------------------------- #
