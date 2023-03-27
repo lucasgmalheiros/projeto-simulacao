@@ -112,6 +112,9 @@ app.layout = dbc.Container([
 )
 def update_kpis(data):
     """Calcula os KPIs de acordo com a data."""
+    if data == "2021-12-31T00:00:00":
+        data = "2021-12-31"
+
     # Percentual atendido em até 1 minuto
     dff = df.loc[df["date"] == data]
     percent = dff["meets_standard"].mean()
