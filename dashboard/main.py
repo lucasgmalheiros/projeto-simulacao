@@ -103,27 +103,25 @@ app.layout = dbc.Container([
      Output("output-media-espera", "children"),
      Output("output-percent-desistencia", "children"),
      Output("output-utilizacao", "children")],
-    #  Output("grafico-percentil", "figure"),
-    #  Output("grafico-chamados", "figure")],
     [Input("my-date-picker", "date")]
 )
-def update_kpis(data):
+def update_kpis(dia):
     """Calcula os KPIs de acordo com a data."""
     # Percentual atendido em até 1 minuto
-    dff = df.loc[df["date"] == data]
+    dff = df.loc[df["date"] == dia]
     percent = dff["meets_standard"].mean()
     # Chamados por dia
-    callers = df.groupby(["date"])["daily_caller"].max()[data]
+    callers = df.groupby(["date"])["daily_caller"].max()[dia]
     # Média tempo de atendimento
-    media_atendimento = df.groupby(["date"])["service_length"].mean()[data]
+    media_atendimento = df.groupby(["date"])["service_length"].mean()[dia]
     media_atendimento = strftime("%M:%S", gmtime(media_atendimento))
     # Média tempo de espera
-    media_espera = df.groupby(["date"])["wait_length"].mean()[data]
+    media_espera = df.groupby(["date"])["wait_length"].mean()[dia]
     media_espera = strftime("%M:%S", gmtime(media_espera))
     # Taxa de desistência
     if len(dff) > 0:
         taxa_desistencia = len(df.loc[(df["service_length"] < 30) &
-                                      (df["date"] == data)]) / len(dff)
+                                      (df["date"] == dia)]) / len(dff)
     else:
         taxa_desistencia = 0
     # Percentual de utilização
@@ -142,12 +140,12 @@ def update_kpis(data):
      Output("grafico-chamados", "figure")],
     [Input("my-date-picker", "date")]
 )
-def update_figures(data):
+def update_figures(dia):
     """Função de callback dos gráficos dos KPIs."""
-    if data == "2021-12-31T00:00:00":
-        data = "2021-12-31"
+    if dia == "2021-12-31T00:00:00":
+        dia = "2021-12-31"
     # Gráficos para cada um dos KPIS
-    mes = df.loc[df["date"].dt.month == datetime.strptime(data,
+    mes = df.loc[df["date"].dt.month == datetime.strptime(dia,
                                                           '%Y-%m-%d').month]
     # Percentual
     percent_graph = px.bar(mes.groupby(["date"]),
