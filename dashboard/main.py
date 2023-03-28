@@ -2,6 +2,7 @@
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import plotly.io as pio
 import dash
 import dash_bootstrap_components as dbc
 from dash import dcc, html, Input, Output, callback
@@ -10,7 +11,7 @@ from time import gmtime, strftime
 from df_manipulation import clean_original_data, clean_arena_data
 
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.MATERIA])
 
 # --------------------------------------------------------------------------- #
 # Base de dados reais de 2021
@@ -22,6 +23,7 @@ print(df.head())
 
 # --------------------------------------------------------------------------- #
 # Layout do app
+ggplot = pio.templates["ggplot2"]  # Tema gráficos
 app.layout = dbc.Container([
     # Linha 1 - Header
     dbc.Row([
@@ -38,13 +40,13 @@ app.layout = dbc.Container([
                 initial_visible_month=max(df["date"]),
                 date=max(df["date"]),
                 display_format='DD/MM/Y'
-            ), width=6, className="text-center"),
-        dbc.Col(
-            dcc.Slider(
-                id="my-slider",
-                min=4, max=6, step=1
-            ), width=6, className="text-center")
-    ]),
+            ), width=12, className="text-center"),
+        # dbc.Col(
+        #     dcc.Slider(
+        #         id="my-slider",
+        #         min=4, max=6, step=1
+        #     ), width=6, className="text-center")
+    ], className="mt-3"),
     # Linha 3 - KPIs de percentual e clientes atendidos
     dbc.Row([
         dbc.Col(
@@ -57,12 +59,12 @@ app.layout = dbc.Container([
                 [dbc.CardHeader(html.H3("Número de chamados no dia")),
                  dbc.CardBody(html.H2(id="output-chamados"))]
                     ), width=6, className="text-center"),
-    ]),
+    ], className="mt-3"),
     # Linha 3.5 - Gráficos e picker de gráficos para cada um dos KPIS
     dbc.Row([
         dbc.Col(dcc.Graph(id="grafico-percentil")),
         dbc.Col(dcc.Graph(id="grafico-chamados")),
-    ]),
+    ], className="mt-1"),
     # Linha 4 - KPIs de tempo médio de atendimento
     dbc.Row([
         dbc.Col(
@@ -88,8 +90,8 @@ app.layout = dbc.Container([
                 [dbc.CardHeader(html.H3("Utilização operadores (%)")),
                  dbc.CardBody(html.H2(id="output-utilizacao"))]
                     ), width=6, className="text-center"),
-    ]),
-], className="mt-3")
+    ], className="mt-3"),
+])
 
 
 # --------------------------------------------------------------------------- #
@@ -145,19 +147,25 @@ def update_figures(dia):
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
     # Gráficos para cada um dos KPIS
-    mes = df.loc[df["date"].dt.month == datetime.strptime(dia,
-                                                          '%Y-%m-%d').month]
+    mes = df.loc[df["date"].dt.month ==
+                 datetime.strptime(dia, '%Y-%m-%d').month]
     # Percentual
+    percent_std = round(mes.groupby(["date"])["meets_standard"].mean(), 2)
     percent_graph = px.bar(mes.groupby(["date"]),
                            x=mes["date"].unique(),
-                           y=round(mes.groupby(["date"])
-                                   ["meets_standard"].mean(), 2),
-                           height=275)
+                           y=percent_std,
+                           height=275,
+                           color=percent_std,
+                           color_continuous_scale="Bluered_r")
+    percent_graph.update_layout(template=ggplot)
     # Número de atendimentos
     callers_graph = px.bar(mes.groupby(["date"]),
                            x=mes["date"].unique(),
                            y=mes.groupby(["date"])["daily_caller"].max(),
-                           height=275)
+                           height=275,
+                           color=mes.groupby(["date"])["daily_caller"].max(),
+                           color_continuous_scale="bluered")
+    callers_graph.update_layout(template=ggplot)
     # Atendimentos = px.bar(media_atendimento, x = date, y = )
     return percent_graph, callers_graph
 
