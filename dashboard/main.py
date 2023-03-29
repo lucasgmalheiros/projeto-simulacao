@@ -40,11 +40,6 @@ app.layout = dbc.Container([
                 date=max(df["date"]),
                 display_format='DD/MM/Y'
             ), width=12, className="text-center"),
-        # dbc.Col(
-        #     dcc.Slider(
-        #         id="my-slider",
-        #         min=4, max=6, step=1
-        #     ), width=6, className="text-center")
     ], className="mt-3"),
     # Linha 3 - KPIs de percentual e clientes atendidos
     dbc.Row([
@@ -79,14 +74,26 @@ app.layout = dbc.Container([
     # Linha 4 - KPIs de tempo médio de atendimento
     dbc.Row([
         dbc.Col(
+            dcc.Slider(
+                    id="slider-percentil-espera",
+                    min=0, max=100, step=5, value=90
+             ), width=6, className="text-center"),
+        dbc.Col(
+            dcc.Slider(
+                    id="slider-percentil-atendimento",
+                    min=0, max=100, step=5, value=50
+             ), width=6, className="text-center")
+    ]),
+    dbc.Row([
+        dbc.Col(
             dbc.Card(
-                [dbc.CardHeader(html.H3("Espera para percentil 90 (min)")),
+                [dbc.CardHeader(html.H3("Espera para percentil selecionado (min)")),
                  dbc.CardBody(html.H2(id="output-media-espera"))]
             ), width=6, className="text-center"),
         dbc.Col(
             dbc.Card(
-                [dbc.CardHeader(html.H3("Mediana do tempo de "
-                                        "atendimento (min)")),
+                [dbc.CardHeader(html.H3("Tempo de atendimento para "
+                                        "o percentil (min)")),
                  dbc.CardBody(html.H2(id="output-media-atendimento"))]
             ), width=6, className="text-center"),
     ]),
@@ -117,9 +124,11 @@ app.layout = dbc.Container([
      Output("output-media-espera", "children"),
      Output("output-percent-desistencia", "children"),
      Output("output-utilizacao", "children")],
-    [Input("my-date-picker", "date")]
+    [Input("my-date-picker", "date"),
+     Input("slider-percentil-espera", "value"),
+     Input("slider-percentil-atendimento", "value")]
 )
-def update_kpis(dia):
+def update_kpis(dia, slider1, slider2):
     """Calcula os KPIs de acordo com a data."""
     # Percentual atendido em até 1 minuto
     dff = df.loc[df["date"] == dia]
@@ -128,10 +137,10 @@ def update_kpis(dia):
     callers = df.groupby(["date"])["daily_caller"].max()[dia]
 
     # Média tempo de atendimento
-    media_atendimento = df.groupby(["date"])["service_length"].median()[dia]
+    media_atendimento = df.groupby(["date"])["service_length"].quantile(q=slider2 / 100)[dia]
     media_atendimento = strftime("%M:%S", gmtime(media_atendimento))
     # Média tempo de espera
-    media_espera = df.groupby(["date"])["wait_length"].quantile(q=0.9)[dia]
+    media_espera = df.groupby(["date"])["wait_length"].quantile(q=slider1 / 100)[dia]
     media_espera = strftime("%M:%S", gmtime(media_espera))
     # Taxa de desistência
     if len(dff) > 0:
