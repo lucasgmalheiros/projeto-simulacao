@@ -72,17 +72,21 @@ app.layout = dbc.Container([
                 dcc.Graph(id="grafico-chamados")]),
     ], className="mt-1"),
     # Linha 4 - KPIs de tempo médio de atendimento
+    dbc.Row(dbc.Col(html.Hr(style={'borderWidth': "0.3vh", 
+                                   "width": "100%", 
+                                   "borderColor": "#000000", 
+                                   "borderStyle":"solid"}), width=12),),
     dbc.Row([
         dbc.Col(
             dcc.Slider(
-                    id="slider-percentil-espera",
-                    min=0, max=100, step=5, value=90
-             ), width=6, className="text-center"),
+                id="slider-percentil-espera",
+                min=0, max=100, step=5, value=90
+            ), width=6, className="text-center"),
         dbc.Col(
             dcc.Slider(
-                    id="slider-percentil-atendimento",
-                    min=0, max=100, step=5, value=50
-             ), width=6, className="text-center")
+                id="slider-percentil-atendimento",
+                min=0, max=100, step=5, value=50
+            ), width=6, className="text-center")
     ]),
     dbc.Row([
         dbc.Col(
@@ -97,6 +101,10 @@ app.layout = dbc.Container([
                  dbc.CardBody(html.H2(id="output-media-atendimento"))]
             ), width=6, className="text-center"),
     ]),
+    dbc.Row(dbc.Col(html.Hr(style={'borderWidth': "0.3vh", 
+                               "width": "100%", 
+                               "borderColor": "#000000", 
+                               "borderStyle":"solid"}), width=12),),
     # Linha 5 - Taxa de abandono ("service_length" < 30s)
     dbc.Row([
         dbc.Col(
@@ -137,10 +145,12 @@ def update_kpis(dia, slider1, slider2):
     callers = df.groupby(["date"])["daily_caller"].max()[dia]
 
     # Média tempo de atendimento
-    media_atendimento = df.groupby(["date"])["service_length"].quantile(q=slider2 / 100)[dia]
+    media_atendimento = df.groupby(
+        ["date"])["service_length"].quantile(q=slider2 / 100)[dia]
     media_atendimento = strftime("%M:%S", gmtime(media_atendimento))
     # Média tempo de espera
-    media_espera = df.groupby(["date"])["wait_length"].quantile(q=slider1 / 100)[dia]
+    media_espera = df.groupby(
+        ["date"])["wait_length"].quantile(q=slider1 / 100)[dia]
     media_espera = strftime("%M:%S", gmtime(media_espera))
     # Taxa de desistência
     if len(dff) > 0:
@@ -251,8 +261,6 @@ def update_figures_percentual(dia, tipo):
                                x=percent_std,
                                height=275)
 
-    
-
     percent_graph.update_layout(template="plotly_white")
     return percent_graph
 
@@ -321,7 +329,7 @@ def update_figures_chamadas(dia, tipo):  # tipo_percent,tipo_num_chamadas):
         callers_graph = px.box(mes.groupby(["date"]),
                                x=mes.groupby(["date"])["daily_caller"].max(),
                                height=275)
-    
+
     callers_graph.update_layout(template="plotly_white")
     return callers_graph
 
