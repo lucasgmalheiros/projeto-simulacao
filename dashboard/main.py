@@ -53,22 +53,24 @@ app.layout = dbc.Container([
             dbc.Card(
                 [dbc.CardHeader(html.H3("Atendimento em até 1 minuto (%)")),
                  dbc.CardBody(html.H2(id="output-percent-atendimento"))]
-                    ), width=6, className="text-center"),
+            ), width=6, className="text-center"),
         dbc.Col(
             dbc.Card(
                 [dbc.CardHeader(html.H3("Número de chamados no dia")),
                  dbc.CardBody(html.H2(id="output-chamados"))]
-                    ), width=6, className="text-center"),
+            ), width=6, className="text-center"),
     ], className="mt-3"),
     # Linha 3.5 - Gráficos e picker de gráficos para cada um dos KPIS
     dbc.Row([
-    
+
         dbc.Col([
-                html.Div([dcc.Dropdown(["Bar Plot","Histogram","Scatter Plot","Bubble Plot"],'Bar Plot',id='crossfilter-percentil')]),
+                html.Div([dcc.Dropdown(["Bar Plot", "Histogram", "Scatter Plot",
+                         "Bubble Plot"], 'Bar Plot', id='crossfilter-percentil')]),
                 dcc.Graph(id="grafico-percentil"),
                 ]),
         dbc.Col([
-                html.Div([dcc.Dropdown(["Bar Plot","Histogram","Scatter Plot","Bubble Plot"],'Bar Plot',id='crossfilter-num-chamadas')]),
+                html.Div([dcc.Dropdown(["Bar Plot", "Histogram", "Scatter Plot",
+                         "Bubble Plot"], 'Bar Plot', id='crossfilter-num-chamadas')]),
                 dcc.Graph(id="grafico-chamados")]),
     ], className="mt-1"),
     # Linha 4 - KPIs de tempo médio de atendimento
@@ -77,12 +79,12 @@ app.layout = dbc.Container([
             dbc.Card(
                 [dbc.CardHeader(html.H3("Tempo médio de atendimento (min)")),
                  dbc.CardBody(html.H2(id="output-media-atendimento"))]
-                    ), width=6, className="text-center"),
+            ), width=6, className="text-center"),
         dbc.Col(
             dbc.Card(
                 [dbc.CardHeader(html.H3("Tempo médio de espera (min)")),
                  dbc.CardBody(html.H2(id="output-media-espera"))]
-                    ), width=6, className="text-center"),
+            ), width=6, className="text-center"),
     ]),
     # Linha 5 - Taxa de abandono ("service_length" < 30s)
     dbc.Row([
@@ -90,12 +92,12 @@ app.layout = dbc.Container([
             dbc.Card(
                 [dbc.CardHeader(html.H3("Taxa de desistência (%)")),
                  dbc.CardBody(html.H2(id="output-percent-desistencia"))]
-                    ), width=6, className="text-center"),
+            ), width=6, className="text-center"),
         dbc.Col(
             dbc.Card(
                 [dbc.CardHeader(html.H3("Utilização operadores (%)")),
                  dbc.CardBody(html.H2(id="output-utilizacao"))]
-                    ), width=6, className="text-center"),
+            ), width=6, className="text-center"),
     ], className="mt-3"),
 ])
 
@@ -145,22 +147,19 @@ def update_kpis(dia):
 
 # Gráficos
 @app.callback(
-    [Output("grafico-percentil", "figure"),
-     Output("grafico-chamados", "figure")],
-    [Input("my-date-picker", "date")]
-
-#Input("output-percent-atendimento","value"),
-#Input("crossfilter-num-chamadas","value")
-
+    Output("grafico-percentil", "figure"),
+    [Input("my-date-picker", "date"),
+     Input("crossfilter-percentil", "value")]
 )
-def update_figures(dia):#tipo_percent,tipo_num_chamadas):
+def update_figures_percentual(dia, tipo):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
     # Gráficos para cada um dos KPIS
     mes = df.loc[df["date"].dt.month ==
                  datetime.strptime(dia, '%Y-%m-%d').month]
-    # Percentual
+
+    # Gráficos do percentual
     percent_std = round(mes.groupby(["date"])["meets_standard"].mean(), 2)
     percent_graph = px.bar(mes.groupby(["date"]),
                            x=mes["date"].unique(),
@@ -170,13 +169,26 @@ def update_figures(dia):#tipo_percent,tipo_num_chamadas):
                            color_continuous_scale="Bluered_r")
     percent_graph.update_yaxes(range=[0.5, 1], tick0=0)
 
-    percent_graph.add_shape( # add a horizontal "target" line
-    type="line", line_color="red", line_width=1, opacity=0.85, line_dash="dash",
-    x0=1, x1=0, xref="paper", y0=0.9, y1=0.9, yref="y")
+    percent_graph.add_shape(  # add a horizontal "target" line
+        type="line", line_color="red", line_width=1, opacity=0.85, line_dash="dash",
+        x0=1, x1=0, xref="paper", y0=0.9, y1=0.9, yref="y")
 
     percent_graph.update_layout(template=ggplot)
+    return percent_graph
 
-    # Número de atendimentos
+
+@app.callback(
+    Output("grafico-chamados", "figure"),
+    [Input("my-date-picker", "date"),
+     Input("crossfilter-num-chamadas", "value")]
+)
+def update_figures_chamadas(dia, tipo):  # tipo_percent,tipo_num_chamadas):
+    """Função de callback dos gráficos dos KPIs."""
+    if dia == "2021-12-31T00:00:00":
+        dia = "2021-12-31"
+    mes = df.loc[df["date"].dt.month ==
+                 datetime.strptime(dia, '%Y-%m-%d').month]
+    # Gráficos número de atendimentos
     callers_graph = px.bar(mes.groupby(["date"]),
                            x=mes["date"].unique(),
                            y=mes.groupby(["date"])["daily_caller"].max(),
@@ -184,8 +196,7 @@ def update_figures(dia):#tipo_percent,tipo_num_chamadas):
                            color=mes.groupby(["date"])["daily_caller"].max(),
                            color_continuous_scale="bluered")
     callers_graph.update_layout(template=ggplot)
-    # Atendimentos = px.bar(media_atendimento, x = date, y = )
-    return percent_graph, callers_graph
+    return callers_graph
 
 
 # --------------------------------------------------------------------------- #
