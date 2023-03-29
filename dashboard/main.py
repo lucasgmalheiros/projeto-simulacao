@@ -62,8 +62,15 @@ app.layout = dbc.Container([
     ], className="mt-3"),
     # Linha 3.5 - Gráficos e picker de gráficos para cada um dos KPIS
     dbc.Row([
-        dbc.Col(dcc.Graph(id="grafico-percentil")),
-        dbc.Col(dcc.Graph(id="grafico-chamados")),
+    
+        dbc.Col([
+                html.Div([dcc.Dropdown([1,2,3,4],'Life expectancy at birth, total (years)',id='crossfilter-yaxis-column')]),
+                dcc.Graph(id="grafico-percentil"),
+                ]),
+                
+        dbc.Col([
+                html.Div([dcc.Dropdown([1,2,3,4],'Life expectancy at birth, total (years)',id='crossfilter-yaxis-column')]),
+                dcc.Graph(id="grafico-chamados")]),
     ], className="mt-1"),
     # Linha 4 - KPIs de tempo médio de atendimento
     dbc.Row([
@@ -114,6 +121,7 @@ def update_kpis(dia):
     percent = dff["meets_standard"].mean()
     # Chamados por dia
     callers = df.groupby(["date"])["daily_caller"].max()[dia]
+
     # Média tempo de atendimento
     media_atendimento = df.groupby(["date"])["service_length"].mean()[dia]
     media_atendimento = strftime("%M:%S", gmtime(media_atendimento))
@@ -157,7 +165,9 @@ def update_figures(dia):
                            height=275,
                            color=percent_std,
                            color_continuous_scale="Bluered_r")
+    
     percent_graph.update_layout(template=ggplot)
+
     # Número de atendimentos
     callers_graph = px.bar(mes.groupby(["date"]),
                            x=mes["date"].unique(),
