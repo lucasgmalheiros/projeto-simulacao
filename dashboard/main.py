@@ -11,7 +11,7 @@ from time import gmtime, strftime
 from df_manipulation import clean_original_data, clean_arena_data
 
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SIMPLEX])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.UNITED])
 
 # --------------------------------------------------------------------------- #
 # Base de dados reais de 2021
@@ -201,7 +201,7 @@ def update_figures_percentual(dia, tipo):
         percentil_std = pd.DataFrame()
         percentil_std["mean"] = percent_std.values
         print(percentil_std)
-        percentil_std["cat"] = pd.cut(percentil_std["mean"], bins=[0,0.9,1.1], include_lowest=True, labels=["abaixo_90","acima_90"])
+        percentil_std["cat"] = pd.cut(percentil_std["mean"], bins=[0,0.899,1.1], include_lowest=True, labels=["abaixo_90","acima_90"])
         print(percentil_std)
 
         percent_graph =px.histogram(percentil_std,
@@ -210,6 +210,7 @@ def update_figures_percentual(dia, tipo):
     
         
     elif tipo == "Bubble Plot":
+
         percent_graph = px.scatter(mes.groupby(["date"]),
                                 x=mes["date"].unique(),
                                 y=percent_std,
@@ -229,7 +230,7 @@ def update_figures_percentual(dia, tipo):
 
     
 
-    percent_graph.update_layout(template=ggplot)
+    percent_graph.update_layout(template="plotly_white")
     return percent_graph
 
 
@@ -290,7 +291,7 @@ def update_figures_chamadas(dia, tipo):  # tipo_percent,tipo_num_chamadas):
                                x=mes.groupby(["date"])["daily_caller"].max(),
                                height=275)
     
-    callers_graph.update_layout(template=ggplot)
+    callers_graph.update_layout(template="plotly_white")
     return callers_graph
 
 
