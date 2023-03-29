@@ -127,6 +127,23 @@ app.layout = dbc.Container([
                  dbc.CardBody(html.H2(id="output-utilizacao"))]
             ), width=6, className="text-center"),
     ], className="mt-3"),
+
+    # Linha 5.5 Graficos de desistencia e utl
+     dbc.Row([
+        dbc.Col([
+                html.Div([dcc.Dropdown(["Bar Plot", "Histogram", "Scatter Plot",
+                         "Bubble Plot", "Box Plot"], 'Bar Plot', id='crossfilter-desistencia')]),
+                dcc.Graph(id="grafico-desistencia"),
+                ]
+            ),
+        dbc.Col([
+                html.Div([dcc.Dropdown(["Bar Plot", "Histogram", "Scatter Plot",
+                         "Bubble Plot", "Box Plot"], 'Bar Plot', id='crossfilter-utl')]),
+                dcc.Graph(id="grafico-utl"),
+                ]
+            ),
+    ])
+
 ])
 
 
@@ -285,7 +302,17 @@ def update_figures_chamadas(dia, tipo):  # tipo_percent,tipo_num_chamadas):
     if tipo == "Bar Plot":
         # Gráficos número de atendimentos BARPLOT
         maximo_mes = max(mes.groupby(["date"])["daily_caller"].max())
-        callers_graph = px.bar(mes.groupby(["date"]),
+        try:
+            callers_graph = px.bar(mes.groupby(["date"]),
+                               x=mes["date"].unique(),
+                               y=mes.groupby(["date"])["daily_caller"].max(),
+                               height=275,
+                               color=mes.groupby(["date"])[
+            "daily_caller"].max(),
+            color_continuous_scale="bluered",
+            labels={"x": "Data", "y": "Nº de Chamadas no Dia"})
+        except:
+            callers_graph = px.bar(mes.groupby(["date"]),
                                x=mes["date"].unique(),
                                y=mes.groupby(["date"])["daily_caller"].max(),
                                height=275,
@@ -349,9 +376,7 @@ def update_figures_atendimentos(dia, tipo):
         dia = "2021-12-31"
     mes = df.loc[df["date"].dt.month ==
                  datetime.strptime(dia, '%Y-%m-%d').month]
-    
-    print("mes \n",mes)
-    
+        
     atendimento_plot = px.bar(mes.groupby(["date"]),
                                x=mes["date"].unique(),
                                y=mes.groupby(["date"])["service_length"].mean(),
@@ -370,15 +395,69 @@ def update_figures_espera(dia, tipo):
         dia = "2021-12-31"
     mes = df.loc[df["date"].dt.month ==
                  datetime.strptime(dia, '%Y-%m-%d').month]
-    
-    print("mes \n",mes)
-    
-    atendimento_plot = px.bar(mes.groupby(["date"]),
+        
+    try:
+        espera_plot = px.bar(mes.groupby(["date"]),
+                               x=mes["date"].unique(),
+                               y=mes.groupby(["date"])["service_length"].mean(),
+                               height=275)
+    except: 
+        espera_plot = px.bar(mes.groupby(["date"]),
                                x=mes["date"].unique(),
                                y=mes.groupby(["date"])["service_length"].mean(),
                                height=275)
 
-    return atendimento_plot
+    return espera_plot
+
+@app.callback(
+    Output("grafico-desistencia", "figure"),
+    [Input("my-date-picker", "date"),
+     Input("crossfilter-desistencia", "value")]
+)
+def update_figures_espera(dia, tipo):
+    """Função de callback dos gráficos dos KPIs."""
+    if dia == "2021-12-31T00:00:00":
+        dia = "2021-12-31"
+    mes = df.loc[df["date"].dt.month ==
+                 datetime.strptime(dia, '%Y-%m-%d').month]
+    
+    try: 
+        desistencia_plot = px.bar(mes.groupby(["date"]),
+                               x=mes["date"].unique(),
+                               y=mes.groupby(["date"])["service_length"].mean(),
+                               height=275)
+    except:
+        desistencia_plot = px.bar(mes.groupby(["date"]),
+                               x=mes["date"].unique(),
+                               y=mes.groupby(["date"])["service_length"].mean(),
+                               height=275)
+
+    return desistencia_plot
+
+@app.callback(
+    Output("grafico-utl", "figure"),
+    [Input("my-date-picker", "date"),
+     Input("crossfilter-utl", "value")]
+)
+def update_figures_espera(dia, tipo):
+    """Função de callback dos gráficos dos KPIs."""
+    if dia == "2021-12-31T00:00:00":
+        dia = "2021-12-31"
+    mes = df.loc[df["date"].dt.month ==
+                 datetime.strptime(dia, '%Y-%m-%d').month]
+    
+    try:
+        utl_plot = px.bar(mes.groupby(["date"]),
+                               x=mes["date"].unique(),
+                               y=mes.groupby(["date"])["service_length"].mean(),
+                               height=275)
+    except:
+        utl_plot = px.bar(mes.groupby(["date"]),
+                               x=mes["date"].unique(),
+                               y=mes.groupby(["date"])["service_length"].mean(),
+                               height=275)
+
+    return utl_plot
 
 # --------------------------------------------------------------------------- #
 # Run server
