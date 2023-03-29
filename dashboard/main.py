@@ -67,7 +67,6 @@ app.layout = dbc.Container([
                 html.Div([dcc.Dropdown(["Bar Plot","Histogram","Scatter Plot","Bubble Plot"],'Bar Plot',id='crossfilter-percentil')]),
                 dcc.Graph(id="grafico-percentil"),
                 ]),
-                
         dbc.Col([
                 html.Div([dcc.Dropdown(["Bar Plot","Histogram","Scatter Plot","Bubble Plot"],'Bar Plot',id='crossfilter-num-chamadas')]),
                 dcc.Graph(id="grafico-chamados")]),
@@ -149,8 +148,12 @@ def update_kpis(dia):
     [Output("grafico-percentil", "figure"),
      Output("grafico-chamados", "figure")],
     [Input("my-date-picker", "date")]
+
+#Input("output-percent-atendimento","value"),
+#Input("crossfilter-num-chamadas","value")
+
 )
-def update_figures(dia):
+def update_figures(dia):#tipo_percent,tipo_num_chamadas):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
@@ -165,7 +168,12 @@ def update_figures(dia):
                            height=275,
                            color=percent_std,
                            color_continuous_scale="Bluered_r")
-    
+    percent_graph.update_yaxes(range=[0.5, 1], tick0=0)
+
+    percent_graph.add_shape( # add a horizontal "target" line
+    type="line", line_color="red", line_width=1, opacity=0.85, line_dash="dash",
+    x0=1, x1=0, xref="paper", y0=0.9, y1=0.9, yref="y")
+
     percent_graph.update_layout(template=ggplot)
 
     # Número de atendimentos
