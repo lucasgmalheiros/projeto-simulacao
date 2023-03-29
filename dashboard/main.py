@@ -86,6 +86,23 @@ app.layout = dbc.Container([
                  dbc.CardBody(html.H2(id="output-media-espera"))]
             ), width=6, className="text-center"),
     ]),
+    #Linha 4.5 Gráficos do TM de atend e do TM de Espera
+    dbc.Row([
+        dbc.Col([
+                html.Div([dcc.Dropdown(["Bar Plot", "Histogram", "Scatter Plot",
+                         "Bubble Plot", "Box Plot"], 'Bar Plot', id='crossfilter-atendimento')]),
+                dcc.Graph(id="grafico-atendimento"),
+                ]
+            ),
+        dbc.Col([
+                html.Div([dcc.Dropdown(["Bar Plot", "Histogram", "Scatter Plot",
+                         "Bubble Plot", "Box Plot"], 'Bar Plot', id='crossfilter-espera')]),
+                dcc.Graph(id="grafico-espera"),
+                ]
+            ),
+    ]),
+
+
     # Linha 5 - Taxa de abandono ("service_length" < 30s)
     dbc.Row([
         dbc.Col(
@@ -161,7 +178,6 @@ def update_figures_percentual(dia, tipo):
 
     # Gráficos do percentual
     percent_std = round(mes.groupby(["date"])["meets_standard"].mean(), 2)
-    print("percent \n", type(percent_std))
     if tipo == "Bar Plot":
         try: 
             percent_graph = px.bar(mes.groupby(["date"]),
@@ -200,9 +216,7 @@ def update_figures_percentual(dia, tipo):
 
         percentil_std = pd.DataFrame()
         percentil_std["mean"] = percent_std.values
-        print(percentil_std)
         percentil_std["cat"] = pd.cut(percentil_std["mean"], bins=[0,0.899,1.1], include_lowest=True, labels=["abaixo_90","acima_90"])
-        print(percentil_std)
 
         percent_graph =px.histogram(percentil_std,
                                x=percentil_std["mean"],
@@ -245,7 +259,6 @@ def update_figures_chamadas(dia, tipo):  # tipo_percent,tipo_num_chamadas):
         dia = "2021-12-31"
     mes = df.loc[df["date"].dt.month ==
                  datetime.strptime(dia, '%Y-%m-%d').month]
-    print("mes \n",mes)
     if tipo == "Bar Plot":
         # Gráficos número de atendimentos BARPLOT
         maximo_mes  =max(mes.groupby(["date"])["daily_caller"].max())
@@ -294,6 +307,23 @@ def update_figures_chamadas(dia, tipo):  # tipo_percent,tipo_num_chamadas):
     callers_graph.update_layout(template="plotly_white")
     return callers_graph
 
+@app.callback(
+    Output("grafico-atendimento", "figure"),
+    [Input("my-date-picker", "date"),
+     Input("crossfilter-atendimento", "value")]
+)
+def update_figures_percentual(dia, tipo):
+    """Função de callback dos gráficos dos KPIs."""
+    if dia == "2021-12-31T00:00:00":
+        dia = "2021-12-31"
+    mes = df.loc[df["date"].dt.month ==
+                 datetime.strptime(dia, '%Y-%m-%d').month]
+    
+    atendimento_plot = px.bar(mes.groupby(["date"],
+                                    x = mes["date"].unique(),
+                                    y = mes.groupby(["date"])["service_length"].mean()))
+
+    return atendimento_plot
 
 # --------------------------------------------------------------------------- #
 # Run server
