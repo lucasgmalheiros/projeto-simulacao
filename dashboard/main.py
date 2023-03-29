@@ -11,7 +11,7 @@ from time import gmtime, strftime
 from df_manipulation import clean_original_data, clean_arena_data
 
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.MATERIA])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG])
 
 # --------------------------------------------------------------------------- #
 # Base de dados reais de 2021
@@ -167,8 +167,9 @@ def update_figures(dia):#tipo_percent,tipo_num_chamadas):
                            y=percent_std,
                            height=275,
                            color=percent_std,
-                           color_continuous_scale="Bluered_r")
-    percent_graph.update_yaxes(range=[0.5, 1], tick0=0)
+                           color_continuous_scale="Bluered_r",
+                           labels={"x": "Data", "y":"Atendimentos até 1 minuto"})
+    percent_graph.update_yaxes(range=[max(percent_std)*0.75, 1], tick0=0)
 
     percent_graph.add_shape( # add a horizontal "target" line
     type="line", line_color="red", line_width=1, opacity=0.85, line_dash="dash",
@@ -182,8 +183,14 @@ def update_figures(dia):#tipo_percent,tipo_num_chamadas):
                            y=mes.groupby(["date"])["daily_caller"].max(),
                            height=275,
                            color=mes.groupby(["date"])["daily_caller"].max(),
-                           color_continuous_scale="bluered")
+                           color_continuous_scale="bluered",
+                           labels={"x": "Data", "y":"Nº de Chamadas no Dia"})
+    
     callers_graph.update_layout(template=ggplot)
+
+    max_caller_mes = max(mes.groupby(["date"])["daily_caller"].max())
+    callers_graph.update_yaxes(range= [ (max_caller_mes*0.75), (max_caller_mes*1.10)], tick0=0)
+
     # Atendimentos = px.bar(media_atendimento, x = date, y = )
     return percent_graph, callers_graph
 
