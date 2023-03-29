@@ -1,11 +1,10 @@
 """Dashboard com apresentação dos KPIs da central de atendimentos."""
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
 import plotly.io as pio
 import dash
 import dash_bootstrap_components as dbc
-from dash import dcc, html, Input, Output, callback
+from dash import dcc, html, Input, Output
 from datetime import date, datetime
 from time import gmtime, strftime
 from df_manipulation import clean_original_data, clean_arena_data
@@ -64,26 +63,31 @@ app.layout = dbc.Container([
     dbc.Row([
 
         dbc.Col([
-                html.Div([dcc.Dropdown(["Bar Plot", "Histogram", "Scatter Plot",
-                         "Bubble Plot", "Box Plot"], 'Bar Plot', id='crossfilter-percentil')]),
+                html.Div([dcc.Dropdown(["Bar Plot", "Histogram",
+                                        "Scatter Plot",
+                         "Bubble Plot", "Box Plot"], 'Bar Plot',
+                                       id='crossfilter-percentil')]),
                 dcc.Graph(id="grafico-percentil"),
                 ]),
         dbc.Col([
-                html.Div([dcc.Dropdown(["Bar Plot", "Histogram", "Scatter Plot",
-                         "Bubble Plot", "Box Plot"], 'Bar Plot', id='crossfilter-num-chamadas')]),
+                html.Div([dcc.Dropdown(["Bar Plot", "Histogram",
+                                        "Scatter Plot",
+                         "Bubble Plot", "Box Plot"], 'Bar Plot',
+                                       id='crossfilter-num-chamadas')]),
                 dcc.Graph(id="grafico-chamados")]),
     ], className="mt-1"),
     # Linha 4 - KPIs de tempo médio de atendimento
     dbc.Row([
         dbc.Col(
             dbc.Card(
-                [dbc.CardHeader(html.H3("Tempo médio de atendimento (min)")),
-                 dbc.CardBody(html.H2(id="output-media-atendimento"))]
+                [dbc.CardHeader(html.H3("Espera para percentil 90 (min)")),
+                 dbc.CardBody(html.H2(id="output-media-espera"))]
             ), width=6, className="text-center"),
         dbc.Col(
             dbc.Card(
-                [dbc.CardHeader(html.H3("Tempo médio de espera (min)")),
-                 dbc.CardBody(html.H2(id="output-media-espera"))]
+                [dbc.CardHeader(html.H3("Mediana do tempo de "
+                                        "atendimento (min)")),
+                 dbc.CardBody(html.H2(id="output-media-atendimento"))]
             ), width=6, className="text-center"),
     ]),
     # Linha 5 - Taxa de abandono ("service_length" < 30s)
@@ -124,10 +128,10 @@ def update_kpis(dia):
     callers = df.groupby(["date"])["daily_caller"].max()[dia]
 
     # Média tempo de atendimento
-    media_atendimento = df.groupby(["date"])["service_length"].mean()[dia]
+    media_atendimento = df.groupby(["date"])["service_length"].median()[dia]
     media_atendimento = strftime("%M:%S", gmtime(media_atendimento))
     # Média tempo de espera
-    media_espera = df.groupby(["date"])["wait_length"].mean()[dia]
+    media_espera = df.groupby(["date"])["wait_length"].quantile(q=0.9)[dia]
     media_espera = strftime("%M:%S", gmtime(media_espera))
     # Taxa de desistência
     if len(dff) > 0:
@@ -163,71 +167,79 @@ def update_figures_percentual(dia, tipo):
     percent_std = round(mes.groupby(["date"])["meets_standard"].mean(), 2)
     print("percent \n", type(percent_std))
     if tipo == "Bar Plot":
-        try: 
+        try:
             percent_graph = px.bar(mes.groupby(["date"]),
-                                x=mes["date"].unique(),
-                                y=percent_std,
-                                height=275,
-                                color=percent_std,
-                                color_continuous_scale="Bluered_r",
-                                labels={"x": "Data", "y":"Atendimentos até 1 minuto"})
-        except: 
+                                   x=mes["date"].unique(),
+                                   y=percent_std,
+                                   height=275,
+                                   color=percent_std,
+                                   color_continuous_scale="Bluered_r",
+                                   labels={"x": "Data",
+                                           "y": "Atendimentos até 1 minuto"})
+        except ValueError:
             percent_graph = px.bar(mes.groupby(["date"]),
-                                x=mes["date"].unique(),
-                                y=percent_std,
-                                height=275,
-                                color=percent_std,
-                                color_continuous_scale="Bluered_r",
-                                labels={"x": "Data", "y":"Atendimentos até 1 minuto"})
+                                   x=mes["date"].unique(),
+                                   y=percent_std,
+                                   height=275,
+                                   color=percent_std,
+                                   color_continuous_scale="Bluered_r",
+                                   labels={"x": "Data",
+                                           "y": "Atendimentos até 1 minuto"})
         percent_graph.update_yaxes(range=[max(percent_std)*0.75, 1], tick0=0)
 
         percent_graph.add_shape(  # add a horizontal "target" line
-            type="line", line_color="red", line_width=1, opacity=0.85, line_dash="dash",
+            type="line", line_color="red", line_width=1, opacity=0.85,
+            line_dash="dash",
             x0=1, x1=0, xref="paper", y0=0.9, y1=0.9, yref="y")
-    
+
     elif tipo == "Scatter Plot":
         percent_graph = px.scatter(mes.groupby(["date"]),
-                                x=mes["date"].unique(),
-                                y=percent_std,
-                                height=275,
-                                color=percent_std,
-                                color_continuous_scale="Bluered_r",
-                                labels={"x": "Data", "y":"Atendimentos até 1 minuto"})
+                                   x=mes["date"].unique(),
+                                   y=percent_std,
+                                   height=275,
+                                   color=percent_std,
+                                   color_continuous_scale="Bluered_r",
+                                   labels={"x": "Data",
+                                           "y": "Atendimentos até 1 minuto"})
         percent_graph.add_shape(  # add a horizontal "target" line
-            type="line", line_color="red", line_width=1, opacity=0.85, line_dash="dash",
+            type="line", line_color="red", line_width=1, opacity=0.85,
+            line_dash="dash",
             x0=1, x1=0, xref="paper", y0=0.9, y1=0.9, yref="y")
     elif tipo == "Histogram":
 
         percentil_std = pd.DataFrame()
         percentil_std["mean"] = percent_std.values
         print(percentil_std)
-        percentil_std["cat"] = pd.cut(percentil_std["mean"], bins=[0,0.9,1.1], include_lowest=True, labels=["abaixo_90","acima_90"])
+        percentil_std["cat"] = pd.cut(percentil_std["mean"], bins=[
+                                      0, 0.9, 1.1], include_lowest=True,
+                                      labels=["abaixo_90", "acima_90"])
         print(percentil_std)
 
-        percent_graph =px.histogram(percentil_std,
-                               x=percentil_std["mean"],
-                               height=275, color = percentil_std["cat"], color_discrete_map= {"acima_90": "blue", "abaixo_90": "red"})
-    
-        
+        percent_graph = px.histogram(percentil_std,
+                                     x=percentil_std["mean"],
+                                     height=275, color=percentil_std["cat"],
+                                     color_discrete_map={"acima_90": "blue",
+                                                         "abaixo_90": "red"})
+
     elif tipo == "Bubble Plot":
         percent_graph = px.scatter(mes.groupby(["date"]),
-                                x=mes["date"].unique(),
-                                y=percent_std,
-                                height=275,
-                                color=percent_std,
-                                color_continuous_scale="Bluered_r",
-                                size = mes.groupby(["date"])["daily_caller"].max(),
-                                labels={"x": "Data", "y":"Atendimentos até 1 minuto"})
+                                   x=mes["date"].unique(),
+                                   y=percent_std,
+                                   height=275,
+                                   color=percent_std,
+                                   color_continuous_scale="Bluered_r",
+                                   size=mes.groupby(["date"])[
+            "daily_caller"].max(),
+            labels={"x": "Data", "y": "Atendimentos até 1 minuto"})
         percent_graph.add_shape(  # add a horizontal "target" line
-            type="line", line_color="red", line_width=1, opacity=0.85, line_dash="dash",
+            type="line", line_color="red", line_width=1, opacity=0.85,
+            line_dash="dash",
             x0=1, x1=0, xref="paper", y0=0.9, y1=0.9, yref="y")
-        
+
     elif tipo == "Box Plot":
-        percent_graph =px.box(mes.groupby(["date"]),
+        percent_graph = px.box(mes.groupby(["date"]),
                                x=percent_std,
                                height=275)
-
-    
 
     percent_graph.update_layout(template=ggplot)
     return percent_graph
@@ -244,52 +256,60 @@ def update_figures_chamadas(dia, tipo):  # tipo_percent,tipo_num_chamadas):
         dia = "2021-12-31"
     mes = df.loc[df["date"].dt.month ==
                  datetime.strptime(dia, '%Y-%m-%d').month]
-    print("mes \n",mes)
+    print("mes \n", mes)
     if tipo == "Bar Plot":
         # Gráficos número de atendimentos BARPLOT
-        maximo_mes  =max(mes.groupby(["date"])["daily_caller"].max())
+        maximo_mes = max(mes.groupby(["date"])["daily_caller"].max())
         callers_graph = px.bar(mes.groupby(["date"]),
                                x=mes["date"].unique(),
                                y=mes.groupby(["date"])["daily_caller"].max(),
                                height=275,
-                               color=mes.groupby(["date"])["daily_caller"].max(),
-                               color_continuous_scale="bluered",
-                               labels={"x": "Data", "y":"Nº de Chamadas no Dia"})
-        callers_graph.update_yaxes(range=[maximo_mes*0.75, maximo_mes*1.1], tick0=0)
+                               color=mes.groupby(["date"])[
+            "daily_caller"].max(),
+            color_continuous_scale="bluered",
+            labels={"x": "Data", "y": "Nº de Chamadas no Dia"})
+        callers_graph.update_yaxes(
+            range=[maximo_mes*0.75, maximo_mes*1.1], tick0=0)
     elif tipo == "Histogram":
         callers_graph = px.histogram(mes.groupby(["date"]),
-                               x=mes.groupby(["date"])["daily_caller"].max(),
-                               height=275)
-                               
+                                     x=mes.groupby(["date"])[
+            "daily_caller"].max(),
+            height=275)
 
     elif tipo == "Scatter Plot":
-        maximo_mes  =max(mes.groupby(["date"])["daily_caller"].max())
+        maximo_mes = max(mes.groupby(["date"])["daily_caller"].max())
         callers_graph = px.scatter(mes.groupby(["date"]),
-                               x=mes["date"].unique(),
-                               y=mes.groupby(["date"])["daily_caller"].max(),
-                               height=275,
-                               color=mes.groupby(["date"])["daily_caller"].max(),
-                               color_continuous_scale="bluered",
-                               labels={"x": "Data", "y":"Nº de Chamadas no Dia"})
-        callers_graph.update_yaxes(range=[maximo_mes*0.75, maximo_mes*1.1], tick0=0)
+                                   x=mes["date"].unique(),
+                                   y=mes.groupby(["date"])[
+            "daily_caller"].max(),
+            height=275,
+            color=mes.groupby(["date"])[
+            "daily_caller"].max(),
+            color_continuous_scale="bluered",
+            labels={"x": "Data", "y": "Nº de Chamadas no Dia"})
+        callers_graph.update_yaxes(
+            range=[maximo_mes*0.75, maximo_mes*1.1], tick0=0)
     elif tipo == "Bubble Plot":
         percent_std = round(mes.groupby(["date"])["meets_standard"].mean(), 2)
 
-        maximo_mes  =max(mes.groupby(["date"])["daily_caller"].max())
+        maximo_mes = max(mes.groupby(["date"])["daily_caller"].max())
         callers_graph = px.scatter(mes.groupby(["date"]),
-                               x=mes["date"].unique(),
-                               y=mes.groupby(["date"])["daily_caller"].max(),
-                               size = percent_std,
-                               height=275,
-                               color=mes.groupby(["date"])["daily_caller"].max(),
-                               color_continuous_scale="bluered",
-                               labels={"x": "Data", "y":"Nº de Chamadas no Dia"})
-        callers_graph.update_yaxes(range=[maximo_mes*0.75, maximo_mes*1.1], tick0=0)
+                                   x=mes["date"].unique(),
+                                   y=mes.groupby(["date"])[
+            "daily_caller"].max(),
+            size=percent_std,
+            height=275,
+            color=mes.groupby(["date"])[
+            "daily_caller"].max(),
+            color_continuous_scale="bluered",
+            labels={"x": "Data", "y": "Nº de Chamadas no Dia"})
+        callers_graph.update_yaxes(
+            range=[maximo_mes*0.75, maximo_mes*1.1], tick0=0)
     elif tipo == "Box Plot":
         callers_graph = px.box(mes.groupby(["date"]),
                                x=mes.groupby(["date"])["daily_caller"].max(),
                                height=275)
-    
+
     callers_graph.update_layout(template=ggplot)
     return callers_graph
 
