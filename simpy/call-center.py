@@ -104,7 +104,7 @@ if __name__ == "__main__":
     # Escrevendo output em csv
     header = ["replication", "call_started", "call_answered",
               "call_ended", "call_type"]
-    with open("output-simpy.csv", "w", newline="") as f:
+    with open("simpy/output-simpy.csv", "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(header)
         for line in output:
