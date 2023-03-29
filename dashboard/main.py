@@ -64,12 +64,12 @@ app.layout = dbc.Container([
     dbc.Row([
     
         dbc.Col([
-                html.Div([dcc.Dropdown([1,2,3,4],'Life expectancy at birth, total (years)',id='crossfilter-yaxis-column')]),
+                html.Div([dcc.Dropdown(["Bar Plot","Histogram","Scatter Plot","Bubble Plot"],'Bar Plot',id='crossfilter-percentil')]),
                 dcc.Graph(id="grafico-percentil"),
                 ]),
                 
         dbc.Col([
-                html.Div([dcc.Dropdown([1,2,3,4],'Life expectancy at birth, total (years)',id='crossfilter-yaxis-column')]),
+                html.Div([dcc.Dropdown(["Bar Plot","Histogram","Scatter Plot","Bubble Plot"],'Bar Plot',id='crossfilter-num-chamadas')]),
                 dcc.Graph(id="grafico-chamados")]),
     ], className="mt-1"),
     # Linha 4 - KPIs de tempo médio de atendimento
