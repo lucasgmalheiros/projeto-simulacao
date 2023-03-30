@@ -60,14 +60,14 @@ app.layout = dbc.Container([
         dbc.Col([
                 html.Div([dcc.Dropdown(["Bar Plot", "Histogram",
                                         "Scatter Plot",
-                         "Bubble Plot", "Box Plot"], 'Bar Plot',
+                                        "Box Plot"], 'Bar Plot',
                                        id='crossfilter-percentil')]),
                 dcc.Graph(id="grafico-percentil"),
                 ]),
         dbc.Col([
                 html.Div([dcc.Dropdown(["Bar Plot", "Histogram",
                                         "Scatter Plot",
-                         "Bubble Plot", "Box Plot"], 'Bar Plot',
+                                        "Box Plot"], 'Bar Plot',
                                        id='crossfilter-num-chamadas')]),
                 dcc.Graph(id="grafico-chamados")]),
     ], className="mt-1"),
@@ -107,7 +107,6 @@ app.layout = dbc.Container([
         dbc.Col([
                 html.Div([dcc.Dropdown(["Bar Plot", "Histogram",
                                         "Scatter Plot",
-                                        "Bubble Plot",
                                         "Box Plot"], 'Bar Plot',
                                        id='crossfilter-atendimento')]),
                 dcc.Graph(id="grafico-atendimento"),
@@ -115,7 +114,7 @@ app.layout = dbc.Container([
                 ),
         dbc.Col([
                 html.Div([dcc.Dropdown(["Bar Plot", "Histogram",
-                                        "Scatter Plot", "Bubble Plot",
+                                        "Scatter Plot",
                                         "Box Plot"], 'Bar Plot',
                                        id='crossfilter-espera')]),
                 dcc.Graph(id="grafico-espera"),
@@ -143,14 +142,14 @@ app.layout = dbc.Container([
     dbc.Row([
         dbc.Col([
             html.Div([dcc.Dropdown(["Bar Plot", "Histogram", "Scatter Plot",
-                                    "Bubble Plot", "Box Plot"], 'Bar Plot',
+                                    "Box Plot"], 'Bar Plot',
                                    id='crossfilter-desistencia')]),
             dcc.Graph(id="grafico-desistencia"),
         ]
         ),
         dbc.Col([
                 html.Div([dcc.Dropdown(["Bar Plot", "Histogram",
-                                        "Scatter Plot", "Bubble Plot",
+                                        "Scatter Plot",
                                         "Box Plot"], 'Bar Plot',
                                        id='crossfilter-utl')]),
                 dcc.Graph(id="grafico-utl"),
@@ -219,8 +218,7 @@ def update_figures_percentual(dia, tipo):
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
     # Gráficos para cada um dos KPIS
-    mes = df.loc[df["date"].dt.month ==
-                 datetime.strptime(dia, '%Y-%m-%d').month]
+    mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)]
 
     # Gráficos do percentual
     percent_std = round(mes.groupby(["date"])["meets_standard"].mean(), 2)
@@ -311,8 +309,7 @@ def update_figures_chamadas(dia, tipo):  # tipo_percent,tipo_num_chamadas):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
-    mes = df.loc[df["date"].dt.month ==
-                 datetime.strptime(dia, '%Y-%m-%d').month]
+    mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)]
     if tipo == "Bar Plot":
         # Gráficos número de atendimentos BARPLOT
         maximo_mes = max(mes.groupby(["date"])["daily_caller"].max())
@@ -391,8 +388,7 @@ def update_figures_atendimentos(dia, tipo):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
-    mes = df.loc[df["date"].dt.month ==
-                 datetime.strptime(dia, '%Y-%m-%d').month]
+    mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)]
 
     atendimento_plot = px.bar(mes.groupby(["date"]),
                               x=mes["date"].unique(),
@@ -411,8 +407,7 @@ def update_figures_espera(dia, tipo):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
-    mes = df.loc[df["date"].dt.month ==
-                 datetime.strptime(dia, '%Y-%m-%d').month]
+    mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)]
 
     try:
         espera_plot = px.bar(mes.groupby(["date"]),
@@ -437,8 +432,7 @@ def update_figures_espera(dia, tipo):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
-    mes = df.loc[df["date"].dt.month ==
-                 datetime.strptime(dia, '%Y-%m-%d').month]
+    mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)]
 
     try:
         desistencia_plot = px.bar(mes.groupby(["date"]),
@@ -465,8 +459,7 @@ def update_figures_espera(dia, tipo):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
-    mes = df.loc[df["date"].dt.month ==
-                 datetime.strptime(dia, '%Y-%m-%d').month]
+    mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)]
 
     try:
         utl_plot = px.bar(mes.groupby(["date"]),
