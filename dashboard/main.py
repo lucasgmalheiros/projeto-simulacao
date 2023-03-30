@@ -251,15 +251,17 @@ def update_figures_percentual(dia, tipo):
 
         percentil_std = pd.DataFrame()
         percentil_std["mean"] = percent_std.values
-        percentil_std["cat"] = pd.cut(percentil_std["mean"], bins=[
+        percentil_std["Valor"] = pd.cut(percentil_std["mean"], bins=[
                                       0, 0.899, 1.1], include_lowest=True,
-                                      labels=["abaixo_90", "acima_90"])
+                                      labels=[
+                                        "abaixo de 90%", "acima de 90%"])
 
         percent_graph = px.histogram(percentil_std,
                                      x=percentil_std["mean"],
-                                     height=275, color=percentil_std["cat"],
-                                     color_discrete_map={"acima_90": "blue",
-                                                         "abaixo_90": "red"})
+                                     height=275, color=percentil_std["Valor"],
+                                     opacity= 0.7,
+                                     color_discrete_map={"acima de 90%": "blue",
+                                                         "abaixo de 90%": "red"})
 
     elif tipo == "Bubble Plot":
 
@@ -376,12 +378,17 @@ def update_figures_atendimentos(dia, tipo):
         dia = "2021-12-31"
     mes = df.loc[df["date"].dt.month ==
                  datetime.strptime(dia, '%Y-%m-%d').month]
-        
-    atendimento_plot = px.bar(mes.groupby(["date"]),
+    
+    try:
+        atendimento_plot = px.bar(mes.groupby(["date"]),
                                x=mes["date"].unique(),
                                y=mes.groupby(["date"])["service_length"].mean(),
                                height=275)
-
+    except:
+        atendimento_plot = px.bar(mes.groupby(["date"]),
+                               x=mes["date"].unique(),
+                               y=mes.groupby(["date"])["service_length"].mean(),
+                               height=275)
     return atendimento_plot
 
 @app.callback(
