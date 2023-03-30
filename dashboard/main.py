@@ -25,12 +25,20 @@ da4["workers"] = 4
 da5 = pd.read_csv("https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/arena/Modelo%202022/output_call_center_5.csv")
 da5 = clean_arena_data(da5)
 da5["workers"] = 5
-# dados simulados com 5 trabalhadores
+# dados simulados com 6 trabalhadores
 da6 = pd.read_csv("https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/arena/Modelo%202022/output_call_center_6.csv")
 da6 = clean_arena_data(da6)
 da6["workers"] = 6
+# dados simulados com 7 trabalhadores
+da7 = pd.read_csv("https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/arena/Modelo%202022/output_call_center_7.csv")
+da7 = clean_arena_data(da7)
+da7["workers"] = 7
+# dados simulados com 8 trabalhadores
+da8 = pd.read_csv("https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/arena/Modelo%202022/output_call_center_8.csv")
+da8 = clean_arena_data(da8)
+da8["workers"] = 8
 # Junção dos dataframes
-d_merge = pd.concat([df, da4, da5, da6], ignore_index=True, sort=False)
+d_merge = pd.concat([df, da4, da5, da6, da7, da8], ignore_index=True, sort=False)
 df = d_merge
 
 # --------------------------------------------------------------------------- #
@@ -58,7 +66,7 @@ app.layout = dbc.Container([
         dbc.Col(
             dcc.Slider(
                 id="slider-trabalhadores",
-                min=4, max=6, step=1, value=4
+                min=4, max=8, step=1, value=4
             ), width=12, className="text-center"),
     ], className="mt-3"),
     # Linha 3 - KPIs de percentual e clientes atendidos
@@ -111,7 +119,7 @@ app.layout = dbc.Container([
     dbc.Row([
         dbc.Col(
             dbc.Card(
-                [dbc.CardHeader(html.H3("Espera para percentil"
+                [dbc.CardHeader(html.H3("Espera para percentil "
                                         "selecionado (min)")),
                  dbc.CardBody(html.H2(id="output-media-espera"))]
             ), width=6, className="text-center"),
