@@ -63,11 +63,11 @@ app.layout = dbc.Container([
             ), width=12, className="text-center"),
     ], className="mt-3"),
     dbc.Row([
-        dbc.Col(
+        dbc.Col([html.H5("Slider do número de trabalhadores em 2022"),
             dcc.Slider(
                 id="slider-trabalhadores",
-                min=4, max=8, step=1, value=4
-            ), width=12, className="text-center"),
+                min=4, max=8, step=1, value=4)],
+            width=12),
     ], className="mt-3"),
     # Linha 3 - KPIs de percentual e clientes atendidos
     dbc.Row([
