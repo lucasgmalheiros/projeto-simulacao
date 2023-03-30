@@ -47,8 +47,8 @@ def clean_arena_data(df):
     df['daily_caller'] = df.groupby('replication').cumcount() + 1
 
     # Define a data inicial e final
-    start_date = datetime(2021, 1, 1)  # O primeiro dia útil de 2021
-    end_date = datetime(2021, 12, 31)  # O último dia útil de 2021
+    start_date = datetime(2022, 1, 1)  # O primeiro dia útil de 2021
+    end_date = datetime(2022, 12, 31)  # O último dia útil de 2021
 
     # Cria um DataFrame com um intervalo de datas úteis
     df_dates = pd.DataFrame(pd.date_range(start_date, end_date, freq='B'),

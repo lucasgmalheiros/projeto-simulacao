@@ -10,15 +10,36 @@ from time import gmtime, strftime
 from df_manipulation import clean_original_data, clean_arena_data
 
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.UNITED])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.MATERIA])
 
 # --------------------------------------------------------------------------- #
 # Base de dados reais de 2021
-df = pd.read_csv("https://raw.githubusercontent.com/lucasgmalheiros"
-                 "/projeto-simulacao-VCBC/main/calls.csv")
-
+df = pd.read_csv("https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/calls.csv")
 df = clean_original_data(df)
-print(df.head())
+df["workers"] = 0
+# dados simulados com 4 trabalhadores
+da4 = pd.read_csv("https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/arena/Modelo%202022/output_call_center_4.csv")
+da4 = clean_arena_data(da4)
+da4["workers"] = 4
+# dados simulados com 5 trabalhadores
+da5 = pd.read_csv("https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/arena/Modelo%202022/output_call_center_5.csv")
+da5 = clean_arena_data(da5)
+da5["workers"] = 5
+# dados simulados com 6 trabalhadores
+da6 = pd.read_csv("https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/arena/Modelo%202022/output_call_center_6.csv")
+da6 = clean_arena_data(da6)
+da6["workers"] = 6
+# dados simulados com 7 trabalhadores
+da7 = pd.read_csv("https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/arena/Modelo%202022/output_call_center_7.csv")
+da7 = clean_arena_data(da7)
+da7["workers"] = 7
+# dados simulados com 8 trabalhadores
+da8 = pd.read_csv("https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/arena/Modelo%202022/output_call_center_8.csv")
+da8 = clean_arena_data(da8)
+da8["workers"] = 8
+# Junção dos dataframes
+d_merge = pd.concat([df, da4, da5, da6, da7, da8], ignore_index=True, sort=False)
+df = d_merge
 
 # --------------------------------------------------------------------------- #
 # Layout do app
@@ -34,12 +55,19 @@ app.layout = dbc.Container([
         dbc.Col(
             dcc.DatePickerSingle(
                 id="my-date-picker",
-                min_date_allowed=min(df["date"]),
-                max_date_allowed=max(df["date"]),
-                initial_visible_month=max(df["date"]),
-                date=max(df["date"]),
+                min_date_allowed="2021-01-01",
+                max_date_allowed="2022-12-31",
+                initial_visible_month="2021-12-31",
+                date="2021-12-31",
                 display_format='DD/MM/Y'
             ), width=12, className="text-center"),
+    ], className="mt-3"),
+    dbc.Row([
+        dbc.Col([html.H5("Slider do número de trabalhadores em 2022"),
+            dcc.Slider(
+                id="slider-trabalhadores",
+                min=4, max=8, step=1, value=4)],
+            width=12),
     ], className="mt-3"),
     # Linha 3 - KPIs de percentual e clientes atendidos
     dbc.Row([
@@ -60,34 +88,39 @@ app.layout = dbc.Container([
         dbc.Col([
                 html.Div([dcc.Dropdown(["Bar Plot", "Histogram",
                                         "Scatter Plot",
-                         "Bubble Plot", "Box Plot"], 'Bar Plot',
+                                        "Box Plot"], 'Bar Plot',
                                        id='crossfilter-percentil')]),
                 dcc.Graph(id="grafico-percentil"),
                 ]),
         dbc.Col([
                 html.Div([dcc.Dropdown(["Bar Plot", "Histogram",
                                         "Scatter Plot",
-                         "Bubble Plot", "Box Plot"], 'Bar Plot',
+                                        "Box Plot"], 'Bar Plot',
                                        id='crossfilter-num-chamadas')]),
                 dcc.Graph(id="grafico-chamados")]),
     ], className="mt-1"),
     # Linha 4 - KPIs de tempo médio de atendimento
+    dbc.Row(dbc.Col(html.Hr(style={'borderWidth': "0.3vh",
+                                   "width": "100%",
+                                   "borderColor": "#000000",
+                                   "borderStyle": "solid"}), width=12),),
     dbc.Row([
         dbc.Col(
             dcc.Slider(
-                    id="slider-percentil-espera",
-                    min=0, max=100, step=5, value=90
-             ), width=6, className="text-center"),
+                id="slider-percentil-espera",
+                min=0, max=100, step=5, value=90
+            ), width=6, className="text-center"),
         dbc.Col(
             dcc.Slider(
-                    id="slider-percentil-atendimento",
-                    min=0, max=100, step=5, value=50
-             ), width=6, className="text-center")
+                id="slider-percentil-atendimento",
+                min=0, max=100, step=5, value=50
+            ), width=6, className="text-center")
     ]),
     dbc.Row([
         dbc.Col(
             dbc.Card(
-                [dbc.CardHeader(html.H3("Espera para percentil selecionado (min)")),
+                [dbc.CardHeader(html.H3("Espera para percentil "
+                                        "selecionado (min)")),
                  dbc.CardBody(html.H2(id="output-media-espera"))]
             ), width=6, className="text-center"),
         dbc.Col(
@@ -97,23 +130,29 @@ app.layout = dbc.Container([
                  dbc.CardBody(html.H2(id="output-media-atendimento"))]
             ), width=6, className="text-center"),
     ]),
-    #Linha 4.5 Gráficos do TM de atend e do TM de Espera
+    # Linha 4.5 Gráficos do TM de atend e do TM de Espera
     dbc.Row([
         dbc.Col([
-                html.Div([dcc.Dropdown(["Bar Plot", "Histogram", "Scatter Plot",
-                         "Bubble Plot", "Box Plot"], 'Bar Plot', id='crossfilter-atendimento')]),
+                html.Div([dcc.Dropdown(["Bar Plot", "Histogram",
+                                        "Scatter Plot",
+                                        "Box Plot"], 'Bar Plot',
+                                       id='crossfilter-atendimento')]),
                 dcc.Graph(id="grafico-atendimento"),
                 ]
-            ),
+                ),
         dbc.Col([
-                html.Div([dcc.Dropdown(["Bar Plot", "Histogram", "Scatter Plot",
-                         "Bubble Plot", "Box Plot"], 'Bar Plot', id='crossfilter-espera')]),
+                html.Div([dcc.Dropdown(["Bar Plot", "Histogram",
+                                        "Scatter Plot",
+                                        "Box Plot"], 'Bar Plot',
+                                       id='crossfilter-espera')]),
                 dcc.Graph(id="grafico-espera"),
                 ]
-            ),
+                ),
     ]),
-
-
+    dbc.Row(dbc.Col(html.Hr(style={'borderWidth': "0.3vh",
+                                   "width": "100%",
+                                   "borderColor": "#000000",
+                                   "borderStyle": "solid"}), width=12),),
     # Linha 5 - Taxa de abandono ("service_length" < 30s)
     dbc.Row([
         dbc.Col(
@@ -127,21 +166,23 @@ app.layout = dbc.Container([
                  dbc.CardBody(html.H2(id="output-utilizacao"))]
             ), width=6, className="text-center"),
     ], className="mt-3"),
-
     # Linha 5.5 Graficos de desistencia e utl
-     dbc.Row([
+    dbc.Row([
         dbc.Col([
-                html.Div([dcc.Dropdown(["Bar Plot", "Histogram", "Scatter Plot",
-                         "Bubble Plot", "Box Plot"], 'Bar Plot', id='crossfilter-desistencia')]),
-                dcc.Graph(id="grafico-desistencia"),
-                ]
-            ),
+            html.Div([dcc.Dropdown(["Bar Plot", "Histogram", "Scatter Plot",
+                                    "Box Plot"], 'Bar Plot',
+                                   id='crossfilter-desistencia')]),
+            dcc.Graph(id="grafico-desistencia"),
+        ]
+        ),
         dbc.Col([
-                html.Div([dcc.Dropdown(["Bar Plot", "Histogram", "Scatter Plot",
-                         "Bubble Plot", "Box Plot"], 'Bar Plot', id='crossfilter-utl')]),
+                html.Div([dcc.Dropdown(["Bar Plot", "Histogram",
+                                        "Scatter Plot",
+                                        "Box Plot"], 'Bar Plot',
+                                       id='crossfilter-utl')]),
                 dcc.Graph(id="grafico-utl"),
                 ]
-            ),
+                ),
     ])
 
 ])
@@ -160,30 +201,32 @@ app.layout = dbc.Container([
      Output("output-utilizacao", "children")],
     [Input("my-date-picker", "date"),
      Input("slider-percentil-espera", "value"),
-     Input("slider-percentil-atendimento", "value")]
+     Input("slider-percentil-atendimento", "value"),
+     Input("slider-trabalhadores", "value")]
 )
-def update_kpis(dia, slider1, slider2):
+def update_kpis(dia, slider1, slider2, trabalhadores):
     """Calcula os KPIs de acordo com a data."""
     # Percentual atendido em até 1 minuto
-    dff = df.loc[df["date"] == dia]
+    dff = df.loc[(df["date"] == dia) & ((df["workers"] == 0) | (df["workers"] == trabalhadores))]
     percent = dff["meets_standard"].mean()
     # Chamados por dia
-    callers = df.groupby(["date"])["daily_caller"].max()[dia]
-
+    callers = dff.groupby(["date"])["daily_caller"].max()[dia]
     # Média tempo de atendimento
-    media_atendimento = df.groupby(["date"])["service_length"].quantile(q=slider2 / 100)[dia]
+    media_atendimento = dff.groupby(["date"])["service_length"].quantile(q=slider2 / 100)[dia]
     media_atendimento = strftime("%M:%S", gmtime(media_atendimento))
     # Média tempo de espera
-    media_espera = df.groupby(["date"])["wait_length"].quantile(q=slider1 / 100)[dia]
+    media_espera = dff.groupby(["date"])["wait_length"].quantile(q=slider1 / 100)[dia]
     media_espera = strftime("%M:%S", gmtime(media_espera))
     # Taxa de desistência
     if len(dff) > 0:
-        taxa_desistencia = len(df.loc[(df["service_length"] < 30) &
-                                      (df["date"] == dia)]) / len(dff)
+        taxa_desistencia = len(dff.loc[dff["service_length"] < 30]) / len(dff)
     else:
         taxa_desistencia = 0
     # Percentual de utilização
-    n_atendentes = 4
+    if dia > "2021-12-31":
+        n_atendentes = trabalhadores
+    else:
+        n_atendentes = 4
     horas_disponiveis = 10 * 60 * 60 * n_atendentes
     utilizacao = dff["service_length"].sum() / horas_disponiveis
     # Retorna os valores
@@ -196,16 +239,16 @@ def update_kpis(dia, slider1, slider2):
 @app.callback(
     Output("grafico-percentil", "figure"),
     [Input("my-date-picker", "date"),
-     Input("crossfilter-percentil", "value")]
+     Input("crossfilter-percentil", "value"),
+     Input("slider-trabalhadores", "value")]
 )
-def update_figures_percentual(dia, tipo):
+def update_figures_percentual(dia, tipo, trabalhadores):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
     # Gráficos para cada um dos KPIS
-    mes = df.loc[df["date"].dt.month ==
-                 datetime.strptime(dia, '%Y-%m-%d').month]
-
+    mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)
+                 & ((df["workers"] == 0) | (df["workers"] == trabalhadores))]
     # Gráficos do percentual
     percent_std = round(mes.groupby(["date"])["meets_standard"].mean(), 2)
     if tipo == "Bar Plot":
@@ -284,8 +327,6 @@ def update_figures_percentual(dia, tipo):
                                x=percent_std,
                                height=275)
 
-    
-
     percent_graph.update_layout(template="plotly_white")
     return percent_graph
 
@@ -293,35 +334,38 @@ def update_figures_percentual(dia, tipo):
 @app.callback(
     Output("grafico-chamados", "figure"),
     [Input("my-date-picker", "date"),
-     Input("crossfilter-num-chamadas", "value")]
+     Input("crossfilter-num-chamadas", "value"),
+     Input("slider-trabalhadores", "value")]
 )
-def update_figures_chamadas(dia, tipo):  # tipo_percent,tipo_num_chamadas):
+def update_figures_chamadas(dia, tipo, trabalhadores):  # tipo_percent,tipo_num_chamadas):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
-    mes = df.loc[df["date"].dt.month ==
-                 datetime.strptime(dia, '%Y-%m-%d').month]
+    mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)
+                 & ((df["workers"] == 0) | (df["workers"] == trabalhadores))]
     if tipo == "Bar Plot":
         # Gráficos número de atendimentos BARPLOT
         maximo_mes = max(mes.groupby(["date"])["daily_caller"].max())
         try:
             callers_graph = px.bar(mes.groupby(["date"]),
-                               x=mes["date"].unique(),
-                               y=mes.groupby(["date"])["daily_caller"].max(),
-                               height=275,
-                               color=mes.groupby(["date"])[
-            "daily_caller"].max(),
-            color_continuous_scale="bluered",
-            labels={"x": "Data", "y": "Nº de Chamadas no Dia"})
-        except:
+                                   x=mes["date"].unique(),
+                                   y=mes.groupby(["date"])[
+                "daily_caller"].max(),
+                height=275,
+                color=mes.groupby(["date"])[
+                "daily_caller"].max(),
+                color_continuous_scale="bluered",
+                labels={"x": "Data", "y": "Nº de Chamadas no Dia"})
+        except ValueError:
             callers_graph = px.bar(mes.groupby(["date"]),
-                               x=mes["date"].unique(),
-                               y=mes.groupby(["date"])["daily_caller"].max(),
-                               height=275,
-                               color=mes.groupby(["date"])[
-            "daily_caller"].max(),
-            color_continuous_scale="bluered",
-            labels={"x": "Data", "y": "Nº de Chamadas no Dia"})
+                                   x=mes["date"].unique(),
+                                   y=mes.groupby(["date"])[
+                "daily_caller"].max(),
+                height=275,
+                color=mes.groupby(["date"])[
+                "daily_caller"].max(),
+                color_continuous_scale="bluered",
+                labels={"x": "Data", "y": "Nº de Chamadas no Dia"})
         callers_graph.update_yaxes(
             range=[maximo_mes*0.75, maximo_mes*1.1], tick0=0)
     elif tipo == "Histogram":
@@ -363,108 +407,117 @@ def update_figures_chamadas(dia, tipo):  # tipo_percent,tipo_num_chamadas):
         callers_graph = px.box(mes.groupby(["date"]),
                                x=mes.groupby(["date"])["daily_caller"].max(),
                                height=275)
-    
+
     callers_graph.update_layout(template="plotly_white")
     return callers_graph
+
 
 @app.callback(
     Output("grafico-atendimento", "figure"),
     [Input("my-date-picker", "date"),
-     Input("crossfilter-atendimento", "value")]
+     Input("crossfilter-atendimento", "value"),
+     Input("slider-trabalhadores", "value")]
 )
-def update_figures_atendimentos(dia, tipo):
+def update_figures_atendimentos(dia, tipo, trabalhadores):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
-    mes = df.loc[df["date"].dt.month ==
-                 datetime.strptime(dia, '%Y-%m-%d').month]
+    mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)
+             & ((df["workers"] == 0) | (df["workers"] == trabalhadores))]
     
     try:
         atendimento_plot = px.bar(mes.groupby(["date"]),
-                               x=mes["date"].unique(),
-                               y=mes.groupby(["date"])["service_length"].mean(),
-                               height=275)
+                              x=mes["date"].unique(),
+                              y=mes.groupby(["date"])["service_length"].mean(),
+                              height=275)
     except:
         atendimento_plot = px.bar(mes.groupby(["date"]),
-                               x=mes["date"].unique(),
-                               y=mes.groupby(["date"])["service_length"].mean(),
-                               height=275)
+                              x=mes["date"].unique(),
+                              y=mes.groupby(["date"])["service_length"].mean(),
+                              height=275)
+                
     return atendimento_plot
+
 
 @app.callback(
     Output("grafico-espera", "figure"),
     [Input("my-date-picker", "date"),
-     Input("crossfilter-espera", "value")]
+     Input("crossfilter-espera", "value"),
+     Input("slider-trabalhadores", "value")]
 )
-def update_figures_espera(dia, tipo):
+def update_figures_espera(dia, tipo, trabalhadores):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
-    mes = df.loc[df["date"].dt.month ==
-                 datetime.strptime(dia, '%Y-%m-%d').month]
-        
+    mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)
+         & ((df["workers"] == 0) | (df["workers"] == trabalhadores))]
     try:
         espera_plot = px.bar(mes.groupby(["date"]),
-                               x=mes["date"].unique(),
-                               y=mes.groupby(["date"])["service_length"].mean(),
-                               height=275)
-    except: 
+                             x=mes["date"].unique(),
+                             y=mes.groupby(["date"])["service_length"].mean(),
+                             height=275)
+    except ValueError:
         espera_plot = px.bar(mes.groupby(["date"]),
-                               x=mes["date"].unique(),
-                               y=mes.groupby(["date"])["service_length"].mean(),
-                               height=275)
+                             x=mes["date"].unique(),
+                             y=mes.groupby(["date"])["service_length"].mean(),
+                             height=275)
 
     return espera_plot
+
 
 @app.callback(
     Output("grafico-desistencia", "figure"),
     [Input("my-date-picker", "date"),
-     Input("crossfilter-desistencia", "value")]
+     Input("crossfilter-desistencia", "value"),
+     Input("slider-trabalhadores", "value")]
 )
-def update_figures_espera(dia, tipo):
+def update_figures_espera(dia, tipo, trabalhadores):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
-    mes = df.loc[df["date"].dt.month ==
-                 datetime.strptime(dia, '%Y-%m-%d').month]
-    
-    try: 
+    mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)
+         & ((df["workers"] == 0) | (df["workers"] == trabalhadores))]
+    try:
         desistencia_plot = px.bar(mes.groupby(["date"]),
-                               x=mes["date"].unique(),
-                               y=mes.groupby(["date"])["service_length"].mean(),
-                               height=275)
-    except:
+                                  x=mes["date"].unique(),
+                                  y=mes.groupby(["date"])[
+            "service_length"].mean(),
+            height=275)
+    except ValueError:
         desistencia_plot = px.bar(mes.groupby(["date"]),
-                               x=mes["date"].unique(),
-                               y=mes.groupby(["date"])["service_length"].mean(),
-                               height=275)
+                                  x=mes["date"].unique(),
+                                  y=mes.groupby(["date"])[
+            "service_length"].mean(),
+            height=275)
 
     return desistencia_plot
+
 
 @app.callback(
     Output("grafico-utl", "figure"),
     [Input("my-date-picker", "date"),
-     Input("crossfilter-utl", "value")]
+     Input("crossfilter-utl", "value"),
+     Input("slider-trabalhadores", "value")]
 )
-def update_figures_espera(dia, tipo):
+def update_figures_espera(dia, tipo, trabalhadores):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
-    mes = df.loc[df["date"].dt.month ==
-                 datetime.strptime(dia, '%Y-%m-%d').month]
-    
+    mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)
+     & ((df["workers"] == 0) | (df["workers"] == trabalhadores))]
     try:
         utl_plot = px.bar(mes.groupby(["date"]),
-                               x=mes["date"].unique(),
-                               y=mes.groupby(["date"])["service_length"].mean(),
-                               height=275)
-    except:
+                          x=mes["date"].unique(),
+                          y=mes.groupby(["date"])["service_length"].mean(),
+                          height=275)
+    except ValueError:
         utl_plot = px.bar(mes.groupby(["date"]),
-                               x=mes["date"].unique(),
-                               y=mes.groupby(["date"])["service_length"].mean(),
-                               height=275)
+                          x=mes["date"].unique(),
+                          y=mes.groupby(["date"])["service_length"].mean(),
+                          height=275)
 
     return utl_plot
+
 
 # --------------------------------------------------------------------------- #
 # Run server
