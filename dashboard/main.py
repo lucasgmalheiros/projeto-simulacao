@@ -34,8 +34,8 @@ app.layout = dbc.Container([
         dbc.Col(
             dcc.DatePickerSingle(
                 id="my-date-picker",
-                min_date_allowed=min(df["date"]),
-                max_date_allowed=max(df["date"]),
+                min_date_allowed="2021-01-01",
+                max_date_allowed="2022-12-31",
                 initial_visible_month=max(df["date"]),
                 date=max(df["date"]),
                 display_format='DD/MM/Y'
@@ -143,15 +143,15 @@ app.layout = dbc.Container([
     dbc.Row([
         dbc.Col([
             html.Div([dcc.Dropdown(["Bar Plot", "Histogram", "Scatter Plot",
-                                    "Bubble Plot", "Box Plot"], 'Bar Plot', 
+                                    "Bubble Plot", "Box Plot"], 'Bar Plot',
                                    id='crossfilter-desistencia')]),
             dcc.Graph(id="grafico-desistencia"),
         ]
         ),
         dbc.Col([
-                html.Div([dcc.Dropdown(["Bar Plot", "Histogram", 
-                                        "Scatter Plot", "Bubble Plot", 
-                                        "Box Plot"], 'Bar Plot', 
+                html.Div([dcc.Dropdown(["Bar Plot", "Histogram",
+                                        "Scatter Plot", "Bubble Plot",
+                                        "Box Plot"], 'Bar Plot',
                                        id='crossfilter-utl')]),
                 dcc.Graph(id="grafico-utl"),
                 ]
@@ -326,7 +326,7 @@ def update_figures_chamadas(dia, tipo):  # tipo_percent,tipo_num_chamadas):
                 "daily_caller"].max(),
                 color_continuous_scale="bluered",
                 labels={"x": "Data", "y": "Nº de Chamadas no Dia"})
-        except:
+        except ValueError:
             callers_graph = px.bar(mes.groupby(["date"]),
                                    x=mes["date"].unique(),
                                    y=mes.groupby(["date"])[
@@ -419,7 +419,7 @@ def update_figures_espera(dia, tipo):
                              x=mes["date"].unique(),
                              y=mes.groupby(["date"])["service_length"].mean(),
                              height=275)
-    except:
+    except ValueError:
         espera_plot = px.bar(mes.groupby(["date"]),
                              x=mes["date"].unique(),
                              y=mes.groupby(["date"])["service_length"].mean(),
@@ -446,7 +446,7 @@ def update_figures_espera(dia, tipo):
                                   y=mes.groupby(["date"])[
             "service_length"].mean(),
             height=275)
-    except:
+    except ValueError:
         desistencia_plot = px.bar(mes.groupby(["date"]),
                                   x=mes["date"].unique(),
                                   y=mes.groupby(["date"])[
@@ -473,7 +473,7 @@ def update_figures_espera(dia, tipo):
                           x=mes["date"].unique(),
                           y=mes.groupby(["date"])["service_length"].mean(),
                           height=275)
-    except:
+    except ValueError:
         utl_plot = px.bar(mes.groupby(["date"]),
                           x=mes["date"].unique(),
                           y=mes.groupby(["date"])["service_length"].mean(),
