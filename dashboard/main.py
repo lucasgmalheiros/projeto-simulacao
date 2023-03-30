@@ -72,10 +72,10 @@ app.layout = dbc.Container([
                 dcc.Graph(id="grafico-chamados")]),
     ], className="mt-1"),
     # Linha 4 - KPIs de tempo médio de atendimento
-    dbc.Row(dbc.Col(html.Hr(style={'borderWidth': "0.3vh", 
-                                   "width": "100%", 
-                                   "borderColor": "#000000", 
-                                   "borderStyle":"solid"}), width=12),),
+    dbc.Row(dbc.Col(html.Hr(style={'borderWidth': "0.3vh",
+                                   "width": "100%",
+                                   "borderColor": "#000000",
+                                   "borderStyle": "solid"}), width=12),),
     dbc.Row([
         dbc.Col(
             dcc.Slider(
@@ -91,7 +91,8 @@ app.layout = dbc.Container([
     dbc.Row([
         dbc.Col(
             dbc.Card(
-                [dbc.CardHeader(html.H3("Espera para percentil selecionado (min)")),
+                [dbc.CardHeader(html.H3("Espera para percentil"
+                                        "selecionado (min)")),
                  dbc.CardBody(html.H2(id="output-media-espera"))]
             ), width=6, className="text-center"),
         dbc.Col(
@@ -101,10 +102,30 @@ app.layout = dbc.Container([
                  dbc.CardBody(html.H2(id="output-media-atendimento"))]
             ), width=6, className="text-center"),
     ]),
-    dbc.Row(dbc.Col(html.Hr(style={'borderWidth': "0.3vh", 
-                               "width": "100%", 
-                               "borderColor": "#000000", 
-                               "borderStyle":"solid"}), width=12),),
+    # Linha 4.5 Gráficos do TM de atend e do TM de Espera
+    dbc.Row([
+        dbc.Col([
+                html.Div([dcc.Dropdown(["Bar Plot", "Histogram",
+                                        "Scatter Plot",
+                                        "Bubble Plot",
+                                        "Box Plot"], 'Bar Plot',
+                                       id='crossfilter-atendimento')]),
+                dcc.Graph(id="grafico-atendimento"),
+                ]
+                ),
+        dbc.Col([
+                html.Div([dcc.Dropdown(["Bar Plot", "Histogram",
+                                        "Scatter Plot", "Bubble Plot",
+                                        "Box Plot"], 'Bar Plot',
+                                       id='crossfilter-espera')]),
+                dcc.Graph(id="grafico-espera"),
+                ]
+                ),
+    ]),
+    dbc.Row(dbc.Col(html.Hr(style={'borderWidth': "0.3vh",
+                                   "width": "100%",
+                                   "borderColor": "#000000",
+                                   "borderStyle": "solid"}), width=12),),
     # Linha 5 - Taxa de abandono ("service_length" < 30s)
     dbc.Row([
         dbc.Col(
@@ -118,6 +139,25 @@ app.layout = dbc.Container([
                  dbc.CardBody(html.H2(id="output-utilizacao"))]
             ), width=6, className="text-center"),
     ], className="mt-3"),
+    # Linha 5.5 Graficos de desistencia e utl
+    dbc.Row([
+        dbc.Col([
+            html.Div([dcc.Dropdown(["Bar Plot", "Histogram", "Scatter Plot",
+                                    "Bubble Plot", "Box Plot"], 'Bar Plot', 
+                                   id='crossfilter-desistencia')]),
+            dcc.Graph(id="grafico-desistencia"),
+        ]
+        ),
+        dbc.Col([
+                html.Div([dcc.Dropdown(["Bar Plot", "Histogram", 
+                                        "Scatter Plot", "Bubble Plot", 
+                                        "Box Plot"], 'Bar Plot', 
+                                       id='crossfilter-utl')]),
+                dcc.Graph(id="grafico-utl"),
+                ]
+                ),
+    ])
+
 ])
 
 
@@ -184,7 +224,6 @@ def update_figures_percentual(dia, tipo):
 
     # Gráficos do percentual
     percent_std = round(mes.groupby(["date"])["meets_standard"].mean(), 2)
-    print("percent \n", type(percent_std))
     if tipo == "Bar Plot":
         try:
             percent_graph = px.bar(mes.groupby(["date"]),
@@ -228,11 +267,9 @@ def update_figures_percentual(dia, tipo):
 
         percentil_std = pd.DataFrame()
         percentil_std["mean"] = percent_std.values
-        print(percentil_std)
         percentil_std["cat"] = pd.cut(percentil_std["mean"], bins=[
                                       0, 0.899, 1.1], include_lowest=True,
                                       labels=["abaixo_90", "acima_90"])
-        print(percentil_std)
 
         percent_graph = px.histogram(percentil_std,
                                      x=percentil_std["mean"],
@@ -276,18 +313,29 @@ def update_figures_chamadas(dia, tipo):  # tipo_percent,tipo_num_chamadas):
         dia = "2021-12-31"
     mes = df.loc[df["date"].dt.month ==
                  datetime.strptime(dia, '%Y-%m-%d').month]
-    print("mes \n", mes)
     if tipo == "Bar Plot":
         # Gráficos número de atendimentos BARPLOT
         maximo_mes = max(mes.groupby(["date"])["daily_caller"].max())
-        callers_graph = px.bar(mes.groupby(["date"]),
-                               x=mes["date"].unique(),
-                               y=mes.groupby(["date"])["daily_caller"].max(),
-                               height=275,
-                               color=mes.groupby(["date"])[
-            "daily_caller"].max(),
-            color_continuous_scale="bluered",
-            labels={"x": "Data", "y": "Nº de Chamadas no Dia"})
+        try:
+            callers_graph = px.bar(mes.groupby(["date"]),
+                                   x=mes["date"].unique(),
+                                   y=mes.groupby(["date"])[
+                "daily_caller"].max(),
+                height=275,
+                color=mes.groupby(["date"])[
+                "daily_caller"].max(),
+                color_continuous_scale="bluered",
+                labels={"x": "Data", "y": "Nº de Chamadas no Dia"})
+        except:
+            callers_graph = px.bar(mes.groupby(["date"]),
+                                   x=mes["date"].unique(),
+                                   y=mes.groupby(["date"])[
+                "daily_caller"].max(),
+                height=275,
+                color=mes.groupby(["date"])[
+                "daily_caller"].max(),
+                color_continuous_scale="bluered",
+                labels={"x": "Data", "y": "Nº de Chamadas no Dia"})
         callers_graph.update_yaxes(
             range=[maximo_mes*0.75, maximo_mes*1.1], tick0=0)
     elif tipo == "Histogram":
@@ -332,6 +380,106 @@ def update_figures_chamadas(dia, tipo):  # tipo_percent,tipo_num_chamadas):
 
     callers_graph.update_layout(template="plotly_white")
     return callers_graph
+
+
+@app.callback(
+    Output("grafico-atendimento", "figure"),
+    [Input("my-date-picker", "date"),
+     Input("crossfilter-atendimento", "value")]
+)
+def update_figures_atendimentos(dia, tipo):
+    """Função de callback dos gráficos dos KPIs."""
+    if dia == "2021-12-31T00:00:00":
+        dia = "2021-12-31"
+    mes = df.loc[df["date"].dt.month ==
+                 datetime.strptime(dia, '%Y-%m-%d').month]
+
+    atendimento_plot = px.bar(mes.groupby(["date"]),
+                              x=mes["date"].unique(),
+                              y=mes.groupby(["date"])["service_length"].mean(),
+                              height=275)
+
+    return atendimento_plot
+
+
+@app.callback(
+    Output("grafico-espera", "figure"),
+    [Input("my-date-picker", "date"),
+     Input("crossfilter-espera", "value")]
+)
+def update_figures_espera(dia, tipo):
+    """Função de callback dos gráficos dos KPIs."""
+    if dia == "2021-12-31T00:00:00":
+        dia = "2021-12-31"
+    mes = df.loc[df["date"].dt.month ==
+                 datetime.strptime(dia, '%Y-%m-%d').month]
+
+    try:
+        espera_plot = px.bar(mes.groupby(["date"]),
+                             x=mes["date"].unique(),
+                             y=mes.groupby(["date"])["service_length"].mean(),
+                             height=275)
+    except:
+        espera_plot = px.bar(mes.groupby(["date"]),
+                             x=mes["date"].unique(),
+                             y=mes.groupby(["date"])["service_length"].mean(),
+                             height=275)
+
+    return espera_plot
+
+
+@app.callback(
+    Output("grafico-desistencia", "figure"),
+    [Input("my-date-picker", "date"),
+     Input("crossfilter-desistencia", "value")]
+)
+def update_figures_espera(dia, tipo):
+    """Função de callback dos gráficos dos KPIs."""
+    if dia == "2021-12-31T00:00:00":
+        dia = "2021-12-31"
+    mes = df.loc[df["date"].dt.month ==
+                 datetime.strptime(dia, '%Y-%m-%d').month]
+
+    try:
+        desistencia_plot = px.bar(mes.groupby(["date"]),
+                                  x=mes["date"].unique(),
+                                  y=mes.groupby(["date"])[
+            "service_length"].mean(),
+            height=275)
+    except:
+        desistencia_plot = px.bar(mes.groupby(["date"]),
+                                  x=mes["date"].unique(),
+                                  y=mes.groupby(["date"])[
+            "service_length"].mean(),
+            height=275)
+
+    return desistencia_plot
+
+
+@app.callback(
+    Output("grafico-utl", "figure"),
+    [Input("my-date-picker", "date"),
+     Input("crossfilter-utl", "value")]
+)
+def update_figures_espera(dia, tipo):
+    """Função de callback dos gráficos dos KPIs."""
+    if dia == "2021-12-31T00:00:00":
+        dia = "2021-12-31"
+    mes = df.loc[df["date"].dt.month ==
+                 datetime.strptime(dia, '%Y-%m-%d').month]
+
+    try:
+        utl_plot = px.bar(mes.groupby(["date"]),
+                          x=mes["date"].unique(),
+                          y=mes.groupby(["date"])["service_length"].mean(),
+                          height=275)
+    except:
+        utl_plot = px.bar(mes.groupby(["date"]),
+                          x=mes["date"].unique(),
+                          y=mes.groupby(["date"])["service_length"].mean(),
+                          height=275)
+
+    return utl_plot
 
 
 # --------------------------------------------------------------------------- #
