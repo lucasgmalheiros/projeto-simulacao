@@ -10,15 +10,28 @@ from time import gmtime, strftime
 from df_manipulation import clean_original_data, clean_arena_data
 
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.UNITED])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.MATERIA])
 
 # --------------------------------------------------------------------------- #
 # Base de dados reais de 2021
-df = pd.read_csv("https://raw.githubusercontent.com/lucasgmalheiros"
-                 "/projeto-simulacao-VCBC/main/calls.csv")
-
+df = pd.read_csv("https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/calls.csv")
 df = clean_original_data(df)
-print(df.head())
+df["workers"] = 0
+# dados simulados com 4 trabalhadores
+da4 = pd.read_csv("https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/arena/Modelo%202022/output_call_center_4.csv")
+da4 = clean_arena_data(da4)
+da4["workers"] = 4
+# dados simulados com 5 trabalhadores
+da5 = pd.read_csv("https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/arena/Modelo%202022/output_call_center_5.csv")
+da5 = clean_arena_data(da5)
+da5["workers"] = 5
+# dados simulados com 5 trabalhadores
+da6 = pd.read_csv("https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/arena/Modelo%202022/output_call_center_6.csv")
+da6 = clean_arena_data(da6)
+da6["workers"] = 6
+# Junção dos dataframes
+d_merge = pd.concat([df, da4, da5, da6], ignore_index=True, sort=False)
+df = d_merge
 
 # --------------------------------------------------------------------------- #
 # Layout do app
@@ -36,9 +49,16 @@ app.layout = dbc.Container([
                 id="my-date-picker",
                 min_date_allowed="2021-01-01",
                 max_date_allowed="2022-12-31",
-                initial_visible_month=max(df["date"]),
-                date=max(df["date"]),
+                initial_visible_month="2021-12-31",
+                date="2021-12-31",
                 display_format='DD/MM/Y'
+            ), width=12, className="text-center"),
+    ], className="mt-3"),
+    dbc.Row([
+        dbc.Col(
+            dcc.Slider(
+                id="slider-trabalhadores",
+                min=4, max=6, step=1, value=4
             ), width=12, className="text-center"),
     ], className="mt-3"),
     # Linha 3 - KPIs de percentual e clientes atendidos
@@ -173,32 +193,32 @@ app.layout = dbc.Container([
      Output("output-utilizacao", "children")],
     [Input("my-date-picker", "date"),
      Input("slider-percentil-espera", "value"),
-     Input("slider-percentil-atendimento", "value")]
+     Input("slider-percentil-atendimento", "value"),
+     Input("slider-trabalhadores", "value")]
 )
-def update_kpis(dia, slider1, slider2):
+def update_kpis(dia, slider1, slider2, trabalhadores):
     """Calcula os KPIs de acordo com a data."""
     # Percentual atendido em até 1 minuto
-    dff = df.loc[df["date"] == dia]
+    dff = df.loc[(df["date"] == dia) & ((df["workers"] == 0) | (df["workers"] == trabalhadores))]
     percent = dff["meets_standard"].mean()
     # Chamados por dia
-    callers = df.groupby(["date"])["daily_caller"].max()[dia]
-
+    callers = dff.groupby(["date"])["daily_caller"].max()[dia]
     # Média tempo de atendimento
-    media_atendimento = df.groupby(
-        ["date"])["service_length"].quantile(q=slider2 / 100)[dia]
+    media_atendimento = dff.groupby(["date"])["service_length"].quantile(q=slider2 / 100)[dia]
     media_atendimento = strftime("%M:%S", gmtime(media_atendimento))
     # Média tempo de espera
-    media_espera = df.groupby(
-        ["date"])["wait_length"].quantile(q=slider1 / 100)[dia]
+    media_espera = dff.groupby(["date"])["wait_length"].quantile(q=slider1 / 100)[dia]
     media_espera = strftime("%M:%S", gmtime(media_espera))
     # Taxa de desistência
     if len(dff) > 0:
-        taxa_desistencia = len(df.loc[(df["service_length"] < 30) &
-                                      (df["date"] == dia)]) / len(dff)
+        taxa_desistencia = len(dff.loc[dff["service_length"] < 30]) / len(dff)
     else:
         taxa_desistencia = 0
     # Percentual de utilização
-    n_atendentes = 4
+    if dia > "2021-12-31":
+        n_atendentes = trabalhadores
+    else:
+        n_atendentes = 4
     horas_disponiveis = 10 * 60 * 60 * n_atendentes
     utilizacao = dff["service_length"].sum() / horas_disponiveis
     # Retorna os valores
@@ -211,15 +231,16 @@ def update_kpis(dia, slider1, slider2):
 @app.callback(
     Output("grafico-percentil", "figure"),
     [Input("my-date-picker", "date"),
-     Input("crossfilter-percentil", "value")]
+     Input("crossfilter-percentil", "value"),
+     Input("slider-trabalhadores", "value")]
 )
-def update_figures_percentual(dia, tipo):
+def update_figures_percentual(dia, tipo, trabalhadores):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
     # Gráficos para cada um dos KPIS
-    mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)]
-
+    mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)
+                 & ((df["workers"] == 0) | (df["workers"] == trabalhadores))]
     # Gráficos do percentual
     percent_std = round(mes.groupby(["date"])["meets_standard"].mean(), 2)
     if tipo == "Bar Plot":
@@ -303,13 +324,15 @@ def update_figures_percentual(dia, tipo):
 @app.callback(
     Output("grafico-chamados", "figure"),
     [Input("my-date-picker", "date"),
-     Input("crossfilter-num-chamadas", "value")]
+     Input("crossfilter-num-chamadas", "value"),
+     Input("slider-trabalhadores", "value")]
 )
-def update_figures_chamadas(dia, tipo):  # tipo_percent,tipo_num_chamadas):
+def update_figures_chamadas(dia, tipo, trabalhadores):  # tipo_percent,tipo_num_chamadas):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
-    mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)]
+    mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)
+                 & ((df["workers"] == 0) | (df["workers"] == trabalhadores))]
     if tipo == "Bar Plot":
         # Gráficos número de atendimentos BARPLOT
         maximo_mes = max(mes.groupby(["date"])["daily_caller"].max())
@@ -382,14 +405,15 @@ def update_figures_chamadas(dia, tipo):  # tipo_percent,tipo_num_chamadas):
 @app.callback(
     Output("grafico-atendimento", "figure"),
     [Input("my-date-picker", "date"),
-     Input("crossfilter-atendimento", "value")]
+     Input("crossfilter-atendimento", "value"),
+     Input("slider-trabalhadores", "value")]
 )
-def update_figures_atendimentos(dia, tipo):
+def update_figures_atendimentos(dia, tipo, trabalhadores):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
-    mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)]
-
+    mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)
+             & ((df["workers"] == 0) | (df["workers"] == trabalhadores))]
     atendimento_plot = px.bar(mes.groupby(["date"]),
                               x=mes["date"].unique(),
                               y=mes.groupby(["date"])["service_length"].mean(),
@@ -401,14 +425,15 @@ def update_figures_atendimentos(dia, tipo):
 @app.callback(
     Output("grafico-espera", "figure"),
     [Input("my-date-picker", "date"),
-     Input("crossfilter-espera", "value")]
+     Input("crossfilter-espera", "value"),
+     Input("slider-trabalhadores", "value")]
 )
-def update_figures_espera(dia, tipo):
+def update_figures_espera(dia, tipo, trabalhadores):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
-    mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)]
-
+    mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)
+         & ((df["workers"] == 0) | (df["workers"] == trabalhadores))]
     try:
         espera_plot = px.bar(mes.groupby(["date"]),
                              x=mes["date"].unique(),
@@ -426,14 +451,15 @@ def update_figures_espera(dia, tipo):
 @app.callback(
     Output("grafico-desistencia", "figure"),
     [Input("my-date-picker", "date"),
-     Input("crossfilter-desistencia", "value")]
+     Input("crossfilter-desistencia", "value"),
+     Input("slider-trabalhadores", "value")]
 )
-def update_figures_espera(dia, tipo):
+def update_figures_espera(dia, tipo, trabalhadores):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
-    mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)]
-
+    mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)
+         & ((df["workers"] == 0) | (df["workers"] == trabalhadores))]
     try:
         desistencia_plot = px.bar(mes.groupby(["date"]),
                                   x=mes["date"].unique(),
@@ -453,14 +479,15 @@ def update_figures_espera(dia, tipo):
 @app.callback(
     Output("grafico-utl", "figure"),
     [Input("my-date-picker", "date"),
-     Input("crossfilter-utl", "value")]
+     Input("crossfilter-utl", "value"),
+     Input("slider-trabalhadores", "value")]
 )
-def update_figures_espera(dia, tipo):
+def update_figures_espera(dia, tipo, trabalhadores):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
-    mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)]
-
+    mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)
+     & ((df["workers"] == 0) | (df["workers"] == trabalhadores))]
     try:
         utl_plot = px.bar(mes.groupby(["date"]),
                           x=mes["date"].unique(),
