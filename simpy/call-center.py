@@ -2,6 +2,7 @@
 import simpy
 import random
 import csv
+import numpy as np
 
 
 class CentralAtendimentos(object):
@@ -16,7 +17,7 @@ class CentralAtendimentos(object):
     def atendimento(self, chamada) -> None:
         """Realiza timeout do tempo para atendimento."""
         # Tempo de atendimento
-        yield self.env.timeout(random.expovariate(1 / 299.1))
+        yield self.env.timeout(np.random.exponential(299.1))
 
 
 def chamados(env, chamada, central) -> None:
@@ -52,7 +53,7 @@ def run_simulacao(env, num_atendentes: int, arrival_interval: float) -> None:
     env.process(chamados(env, chamada, central))
     while True:
         # Tempo entre chegadas
-        yield env.timeout(random.expovariate(1 / arrival_interval))
+        yield env.timeout(np.random.exponential(arrival_interval))
         chamada += 1
         env.process(chamados(env, chamada, central))
 
