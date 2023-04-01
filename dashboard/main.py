@@ -134,18 +134,17 @@ app.layout = dbc.Container([
     dbc.Row([
         dbc.Col([
                 html.Div([dcc.Dropdown(["Bar Plot", "Histogram",
-                                        "Scatter Plot",
                                         "Box Plot"], 'Bar Plot',
-                                       id='crossfilter-atendimento')]),
-                dcc.Graph(id="grafico-atendimento"),
+                                       id='crossfilter-espera')]),
+                dcc.Graph(id="grafico-espera"),
                 ]
                 ),
         dbc.Col([
                 html.Div([dcc.Dropdown(["Bar Plot", "Histogram",
                                         "Scatter Plot",
                                         "Box Plot"], 'Bar Plot',
-                                       id='crossfilter-espera')]),
-                dcc.Graph(id="grafico-espera"),
+                                       id='crossfilter-atendimento')]),
+                dcc.Graph(id="grafico-atendimento"),
                 ]
                 ),
     ]),
@@ -422,20 +421,44 @@ def update_figures_atendimentos(dia, tipo, trabalhadores):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
+
     mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)
              & ((df["workers"] == 0) | (df["workers"] == trabalhadores))]
     
-    try:
-        atendimento_plot = px.bar(mes.groupby(["date"]),
-                              x=mes["date"].unique(),
-                              y=mes.groupby(["date"])["service_length"].mean(),
-                              height=275)
-    except:
-        atendimento_plot = px.bar(mes.groupby(["date"]),
-                              x=mes["date"].unique(),
-                              y=mes.groupby(["date"])["service_length"].mean(),
-                              height=275)
-                
+    if tipo == "Bar Plot":
+        try:
+            atendimento_plot = px.bar(mes.groupby(["date"]),
+                                  x=mes["date"].unique(),
+                                  y=mes.groupby(["date"])["service_length"].mean(),
+                                  height=275)
+        except:
+            atendimento_plot = px.bar(mes.groupby(["date"]),
+                                  x=mes["date"].unique(),
+                                  y=mes.groupby(["date"])["service_length"].mean(),
+                                  height=275)
+    elif tipo == "Box Plot":
+    
+    
+        atendimento_plot = px.box(mes,
+                                  x = "date",
+                                  y = "service_length",
+                                  notched=True,
+                                  height = 275)
+    
+    elif tipo == "Scatter Plot":
+        atendimento_plot = px.scatter(mes,
+                                  x = "date",
+                                  y = "service_length",
+                                  color = "meets_standard",
+                                  height = 275)
+    elif tipo == "Histogram":
+        atendimento_plot = px.histogram(mes,
+                                  x = "service_length",
+                                  height = 275)
+        
+    
+
+
     return atendimento_plot
 
 
@@ -451,16 +474,32 @@ def update_figures_espera(dia, tipo, trabalhadores):
         dia = "2021-12-31"
     mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)
          & ((df["workers"] == 0) | (df["workers"] == trabalhadores))]
-    try:
-        espera_plot = px.bar(mes.groupby(["date"]),
-                             x=mes["date"].unique(),
-                             y=mes.groupby(["date"])["service_length"].mean(),
-                             height=275)
-    except ValueError:
-        espera_plot = px.bar(mes.groupby(["date"]),
-                             x=mes["date"].unique(),
-                             y=mes.groupby(["date"])["service_length"].mean(),
-                             height=275)
+    
+    if tipo == "Bar Plot":
+        try:
+            espera_plot = px.bar(mes.groupby(["date"]),
+                                x=mes["date"].unique(),
+                                y=mes.groupby(["date"])["wait_length"].mean(),
+                                height=275)
+        except ValueError:
+            espera_plot = px.bar(mes.groupby(["date"]),
+                                x=mes["date"].unique(),
+                                y=mes.groupby(["date"])["wait_length"].mean(),
+                                height=275)
+    elif tipo == "Box Plot":
+
+        espera_plot = px.box(mes,
+                                  x = "date",
+                                  y = "wait_length", 
+                                  color="meets_standard",
+                                  notched=True,
+                                  color_discrete_map={"acima de 90%": "blue",
+                                                         "abaixo de 90%": "red"},
+                                  height = 275)
+    elif tipo == "Histogram":
+        espera_plot = px.histogram(mes,
+                                  x = "wait_length",
+                                  height = 275)
 
     return espera_plot
 
@@ -471,24 +510,28 @@ def update_figures_espera(dia, tipo, trabalhadores):
      Input("crossfilter-desistencia", "value"),
      Input("slider-trabalhadores", "value")]
 )
-def update_figures_espera(dia, tipo, trabalhadores):
+def update_figures_desistencia(dia, tipo, trabalhadores):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
     mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)
          & ((df["workers"] == 0) | (df["workers"] == trabalhadores))]
-    try:
-        desistencia_plot = px.bar(mes.groupby(["date"]),
-                                  x=mes["date"].unique(),
-                                  y=mes.groupby(["date"])[
-            "service_length"].mean(),
-            height=275)
-    except ValueError:
-        desistencia_plot = px.bar(mes.groupby(["date"]),
-                                  x=mes["date"].unique(),
-                                  y=mes.groupby(["date"])[
-            "service_length"].mean(),
-            height=275)
+    
+    if tipo == "Bar Plot":
+        try:
+            desistencia_plot = px.bar(mes.groupby(["date"]),
+                                    x=mes["date"].unique(),
+                                    y=mes.groupby(["date"])[
+                "service_length"].mean(),
+                height=275)
+        except ValueError:
+            desistencia_plot = px.bar(mes.groupby(["date"]),
+                                    x=mes["date"].unique(),
+                                    y=mes.groupby(["date"])[
+                "service_length"].mean(),
+                height=275)
+    
+
 
     return desistencia_plot
 
@@ -499,7 +542,7 @@ def update_figures_espera(dia, tipo, trabalhadores):
      Input("crossfilter-utl", "value"),
      Input("slider-trabalhadores", "value")]
 )
-def update_figures_espera(dia, tipo, trabalhadores):
+def update_figures_utl(dia, tipo, trabalhadores):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
