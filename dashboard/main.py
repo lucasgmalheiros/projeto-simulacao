@@ -139,7 +139,7 @@ app.layout = dbc.Container([
     dbc.Row([
         dbc.Col([
                 html.Div([dcc.Dropdown(["Bar Plot", "Histogram",
-                                        "Box Plot"], 'Bar Plot',
+                                        "Box Plot", "Scatter Plot"], 'Bar Plot',
                                        id='crossfilter-espera')]),
                 dcc.Graph(id="grafico-espera"),
                 ]
@@ -486,11 +486,19 @@ def update_figures_espera(dia, tipo, trabalhadores):
                                 x=mes["date"].unique(),
                                 y=mes.groupby(["date"])["wait_length"].mean(),
                                 height=275)
+            espera_plot.add_shape(  # add a horizontal "target" line
+            type="line", line_color="red", line_width=1, opacity=0.85,
+            line_dash="dash",
+            x0=1, x1=0, xref="paper", y0=60, y1=60, yref="y")
         except ValueError:
             espera_plot = px.bar(mes.groupby(["date"]),
                                 x=mes["date"].unique(),
                                 y=mes.groupby(["date"])["wait_length"].mean(),
                                 height=275)
+            espera_plot.add_shape(  # add a horizontal "target" line
+            type="line", line_color="red", line_width=1, opacity=0.85,
+            line_dash="dash",
+            x0=1, x1=0, xref="paper", y0=60, y1=60, yref="y")
     elif tipo == "Box Plot":
 
         espera_plot = px.box(mes,
@@ -505,6 +513,16 @@ def update_figures_espera(dia, tipo, trabalhadores):
         espera_plot = px.histogram(mes,
                                   x = "wait_length",
                                   height = 275)
+    elif tipo == "Scatter Plot":
+        espera_plot = px.scatter(mes,
+                                  x = "date",
+                                  y = "wait_length", 
+                                  color="meets_standard",
+                                  height = 275)
+        espera_plot.add_shape(  # add a horizontal "target" line
+            type="line", line_color="red", line_width=1, opacity=0.85,
+            line_dash="dash",
+            x0=1, x1=0, xref="paper", y0=60, y1=60, yref="y")
 
     return espera_plot
 
