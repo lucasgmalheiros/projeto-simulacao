@@ -37,8 +37,13 @@ da7["workers"] = 7
 da8 = pd.read_csv("https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/arena/Modelo%202022/output_call_center_8.csv")
 da8 = clean_arena_data(da8)
 da8["workers"] = 8
+# dados simulados com 9 trabalhadores
+da9 = pd.read_csv("https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/arena/Modelo%202022/output_call_center_9.csv")
+da9 = clean_arena_data(da9)
+da9["workers"] = 9
 # Junção dos dataframes
-d_merge = pd.concat([df, da4, da5, da6, da7, da8], ignore_index=True, sort=False)
+d_merge = pd.concat([df, da4, da5, da6, da7, da8, da9],
+                    ignore_index=True, sort=False)
 df = d_merge
 
 # --------------------------------------------------------------------------- #
@@ -66,7 +71,7 @@ app.layout = dbc.Container([
         dbc.Col([html.H5("Slider do número de trabalhadores em 2022"),
             dcc.Slider(
                 id="slider-trabalhadores",
-                min=4, max=8, step=1, value=4)],
+                min=4, max=9, step=1, value=4)],
             width=12),
     ], className="mt-3"),
     # Linha 3 - KPIs de percentual e clientes atendidos
