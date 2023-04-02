@@ -272,7 +272,7 @@ def update_figures_percentual(dia, tipo, trabalhadores):
                                    y=percent_std,
                                    height=275,
                                    color=percent_std,
-                                   color_continuous_scale="Bluered_r",
+                                   color_continuous_scale="Blues",
                                    labels={"x": "Data",
                                            "y": "Atendimentos até 1 minuto (%)"})
         except ValueError:
@@ -281,7 +281,7 @@ def update_figures_percentual(dia, tipo, trabalhadores):
                                    y=percent_std,
                                    height=275,
                                    color=percent_std,
-                                   color_continuous_scale="Bluered_r",
+                                   color_continuous_scale="Blues",
                                    labels={"x": "Data",
                                            "y": "Atendimentos até 1 minuto (%)"})
         percent_graph.update_yaxes(range=[max(percent_std)*0.75, 1], tick0=0)
@@ -291,7 +291,11 @@ def update_figures_percentual(dia, tipo, trabalhadores):
             line_dash="dash",
             x0=1, x1=0, xref="paper", y0=0.9, y1=0.9, yref="y")
 
-        percent_graph.update_coloraxes(colorbar_title="Valores")
+        percent_graph.update_coloraxes(colorbar_title="Até 1 minuto")
+        percent_graph.update_layout(coloraxis_colorbar_tickformat=".0%")
+        percent_graph.update_layout(yaxis_tickformat=".0%")
+        percent_graph.update_traces(hovertemplate='<b>%{x}</b><br>Percentual: %{y:.2%}')
+        
     elif tipo == "Scatter Plot":
         percent_graph = px.scatter(mes.groupby(["date"]),
                                    x=mes["date"].unique(),
