@@ -273,7 +273,7 @@ def update_figures_percentual(dia, tipo, trabalhadores):
                                    y=percent_std,
                                    height=275,
                                    color=percent_std,
-                                   color_continuous_scale="Blues",
+                                   color_continuous_scale="blugrn ",
                                    labels={"x": "Data",
                                            "y": "Atendimentos até 1 minuto (%)"})
         except ValueError:
@@ -282,7 +282,7 @@ def update_figures_percentual(dia, tipo, trabalhadores):
                                    y=percent_std,
                                    height=275,
                                    color=percent_std,
-                                   color_continuous_scale="Blues",
+                                   color_continuous_scale="blugrn ",
                                    labels={"x": "Data",
                                            "y": "Atendimentos até 1 minuto (%)"})
         percent_graph.update_yaxes(range=[max(percent_std)*0.75, 1], tick0=0)
@@ -303,7 +303,7 @@ def update_figures_percentual(dia, tipo, trabalhadores):
                                    y=percent_std,
                                    height=275,
                                    color=percent_std,
-                                   color_continuous_scale="Blues",
+                                   color_continuous_scale="aggrnyl",
                                    labels={"x": "Data",
                                            "y": "Atendimentos até 1 minuto (%)"})
         percent_graph.add_shape(  # add a horizontal "target" line
