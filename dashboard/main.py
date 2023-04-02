@@ -90,7 +90,7 @@ app.layout = dbc.Container([
             ), width=6, className="text-center"),
         dbc.Col(
             dbc.Card(
-                [dbc.CardHeader(html.H3("Número de chamados no dia")),
+                [dbc.CardHeader(html.H3("Número de chamados atendidos no dia")),
                  dbc.CardBody(html.H2(id="output-chamados"))]
             ), width=6, className="text-center"),
     ], className="mt-3"),
