@@ -311,23 +311,23 @@ def update_figures_percentual(dia, tipo, trabalhadores):
             x0=1, x1=0, xref="paper", y0=0.9, y1=0.9, yref="y")
         percent_graph.update_coloraxes(colorbar_title="Valores")
     elif tipo == "Histogram":
-
         percentil_std = pd.DataFrame()
         percentil_std["mean"] = percent_std.values
-        percentil_std["Valor"] = pd.cut(percentil_std["mean"], bins=[
-            0, 0.899, 1.1], include_lowest=True,
-            labels=[
-            "abaixo de 90%", "acima de 90%"])
-
+        percentil_std["Valor"] = pd.cut(percentil_std["mean"], bins=[0, 0.899, 1.1], include_lowest=True, labels=["abaixo de 90%", "acima de 90%"])
+    
         percent_graph = px.histogram(percentil_std,
-                                     x=percentil_std["mean"],
-                                     height=275, color=percentil_std["Valor"],
-                                     opacity=0.7,
-                                     color_discrete_map={"acima de 90%": "blue",
-                                                         "abaixo de 90%": "red"})
-        percent_graph.update_xaxes(
-            title_text='Percentual atendido em até 1 minuto')
+                                 x=percentil_std["mean"],
+                                 height=275,
+                                 color=percentil_std["Valor"],
+                                 opacity=1,
+                                 color_discrete_sequence=["lightblue", "blue"])
+    
+        percent_graph.update_xaxes(title_text='Percentual atendido em até 1 minuto', tickformat=".1%")
         percent_graph.update_yaxes(title_text='Frequência')
+        percent_graph.update_coloraxes(colorbar_title="% Acima de 90%")
+        percent_graph.update_traces(hovertemplate="<b>%{y} Repetições</b><br>%{x:.1%} Atendidos<br><extra></extra>")
+        
+
 
     elif tipo == "Box Plot":
         percent_graph = px.box(mes.groupby(["date"]),
