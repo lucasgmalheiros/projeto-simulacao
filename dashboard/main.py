@@ -2,6 +2,7 @@
 import pandas as pd
 import plotly.express as px
 import plotly.io as pio
+from plotly.colors import sequential
 import dash
 import dash_bootstrap_components as dbc
 from dash import dcc, html, Input, Output
@@ -75,7 +76,7 @@ app.layout = dbc.Container([
             ), width=12, className="text-center"),
     ], className="mt-3"),
     dbc.Row([
-        dbc.Col([html.H5("Número de trabalhadores em 2022"),
+        dbc.Col([html.H5("Slider do número de trabalhadores em 2022"),
             dcc.Slider(
                 id="slider-trabalhadores",
                 min=4, max=9, step=1, value=4)],
