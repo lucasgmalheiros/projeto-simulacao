@@ -302,14 +302,17 @@ def update_figures_percentual(dia, tipo, trabalhadores):
                                    y=percent_std,
                                    height=275,
                                    color=percent_std,
-                                   color_continuous_scale="Bluered_r",
+                                   color_continuous_scale="Blues",
                                    labels={"x": "Data",
                                            "y": "Atendimentos até 1 minuto (%)"})
         percent_graph.add_shape(  # add a horizontal "target" line
             type="line", line_color="red", line_width=1, opacity=0.85,
             line_dash="dash",
             x0=1, x1=0, xref="paper", y0=0.9, y1=0.9, yref="y")
-        percent_graph.update_coloraxes(colorbar_title="Valores")
+        percent_graph.update_coloraxes(colorbar_title="Até 1 minuto")
+        percent_graph.update_layout(coloraxis_colorbar_tickformat=".0%")
+        percent_graph.update_layout(yaxis_tickformat=".0%")
+        percent_graph.update_traces(hovertemplate='<b>%{x}</b><br>Percentual: %{y:.2%}')
     elif tipo == "Histogram":
         percentil_std = pd.DataFrame()
         percentil_std["mean"] = percent_std.values
