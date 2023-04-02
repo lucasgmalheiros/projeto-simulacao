@@ -146,7 +146,7 @@ app.layout = dbc.Container([
     dbc.Row([
         dbc.Col([
                 html.Div([dcc.Dropdown(["Bar Plot", "Histogram",
-                                        "Box Plot", "Scatter Plot"], 'Bar Plot',
+                                        "Scatter Plot", "Box Plot"], 'Bar Plot',
                                        id='crossfilter-espera')]),
                 dcc.Graph(id="grafico-espera"),
                 ]
