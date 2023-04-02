@@ -75,7 +75,7 @@ app.layout = dbc.Container([
             ), width=12, className="text-center"),
     ], className="mt-3"),
     dbc.Row([
-        dbc.Col([html.H5("Slider do número de trabalhadores em 2022"),
+        dbc.Col([html.H5("Número de trabalhadores em 2022"),
             dcc.Slider(
                 id="slider-trabalhadores",
                 min=4, max=9, step=1, value=4)],
@@ -323,7 +323,7 @@ def update_figures_percentual(dia, tipo, trabalhadores):
                                  height=275,
                                  color=percentil_std["Valor"],
                                  opacity=1,
-                                 color_discrete_sequence=["lightblue", "blue"])
+                                 color_discrete_sequence=["#EB1A00", "#110052"])
     
         percent_graph.update_xaxes(title_text='Percentual atendido em até 1 minuto', tickformat=".1%")
         percent_graph.update_yaxes(title_text='Frequência')
