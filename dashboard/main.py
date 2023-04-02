@@ -274,7 +274,7 @@ def update_figures_percentual(dia, tipo, trabalhadores):
                                    color=percent_std,
                                    color_continuous_scale="Bluered_r",
                                    labels={"x": "Data",
-                                           "y": "Atendimentos até 1 minuto"})
+                                           "y": "Atendimentos até 1 minuto (%)"})
         except ValueError:
             percent_graph = px.bar(mes.groupby(["date"]),
                                    x=mes["date"].unique(),
@@ -283,7 +283,7 @@ def update_figures_percentual(dia, tipo, trabalhadores):
                                    color=percent_std,
                                    color_continuous_scale="Bluered_r",
                                    labels={"x": "Data",
-                                           "y": "Atendimentos até 1 minuto"})
+                                           "y": "Atendimentos até 1 minuto (%)"})
         percent_graph.update_yaxes(range=[max(percent_std)*0.75, 1], tick0=0)
 
         percent_graph.add_shape(  # add a horizontal "target" line
@@ -300,7 +300,7 @@ def update_figures_percentual(dia, tipo, trabalhadores):
                                    color=percent_std,
                                    color_continuous_scale="Bluered_r",
                                    labels={"x": "Data",
-                                           "y": "Atendimentos até 1 minuto"})
+                                           "y": "Atendimentos até 1 minuto (%)"})
         percent_graph.add_shape(  # add a horizontal "target" line
             type="line", line_color="red", line_width=1, opacity=0.85,
             line_dash="dash",
@@ -388,13 +388,12 @@ def update_figures_chamadas(dia, tipo, trabalhadores):
         maximo_mes = max(mes.groupby(["date"])["daily_caller"].max())
         callers_graph = px.scatter(mes.groupby(["date"]),
                                    x=mes["date"].unique(),
-                                   y=mes.groupby(["date"])[
-            "daily_caller"].max(),
-            height=275,
-            color=mes.groupby(["date"])[
-            "daily_caller"].max(),
-            color_continuous_scale="bluered",
-            labels={"x": "Data", "y": "Nº de Chamadas no Dia"})
+                                   y=mes.groupby(["date"])["daily_caller"].max(),
+                                   height=275,
+                                   color=mes.groupby(["date"])[
+                                   "daily_caller"].max(),
+                                   color_continuous_scale="bluered",
+                                   labels={"x": "Data", "y": "Nº de Chamadas no Dia"})
         callers_graph.update_yaxes(
             range=[maximo_mes*0.75, maximo_mes*1.1], tick0=0)
         callers_graph.update_coloraxes(colorbar_title="Valores")
@@ -429,32 +428,40 @@ def update_figures_atendimentos(dia, tipo, trabalhadores):
             atendimento_plot = px.bar(mes.groupby(["date"]),
                                       x=mes["date"].unique(),
                                       y=mes.groupby(["date"])[
-                "service_length"].mean(),
-                height=275)
-        except:
+                "service_length"].median(),
+                height=275,
+                labels={"x": "Data", "y": "Tempo mediano (s)"})
+        except ValueError:
             atendimento_plot = px.bar(mes.groupby(["date"]),
                                       x=mes["date"].unique(),
                                       y=mes.groupby(["date"])[
-                "service_length"].mean(),
-                height=275)
-    elif tipo == "Box Plot":
+                "service_length"].median(),
+                height=275,
+                labels={"x": "Data", "y": "Tempo mediano (s)"})
 
+    elif tipo == "Box Plot":
         atendimento_plot = px.box(mes,
                                   x="date",
                                   y="service_length",
                                   notched=True,
                                   height=275)
+        atendimento_plot.update_xaxes(title_text='Data')
+        atendimento_plot.update_yaxes(title_text='Tempo de atendimento (s)')
 
     elif tipo == "Scatter Plot":
         atendimento_plot = px.scatter(mes,
                                       x="date",
                                       y="service_length",
-                                      color="meets_standard",
                                       height=275)
+        atendimento_plot.update_xaxes(title_text='Data')
+        atendimento_plot.update_yaxes(title_text='Tempo de atendimento (s)')
+
     elif tipo == "Histogram":
         atendimento_plot = px.histogram(mes,
                                         x="service_length",
                                         height=275)
+        atendimento_plot.update_xaxes(title_text='Tempo de atendimento (s)')
+        atendimento_plot.update_yaxes(title_text='Frequência')
 
     return atendimento_plot
 
@@ -476,21 +483,26 @@ def update_figures_espera(dia, tipo, trabalhadores):
         try:
             espera_plot = px.bar(mes.groupby(["date"]),
                                  x=mes["date"].unique(),
-                                 y=mes.groupby(["date"])["wait_length"].mean(),
+                                 y=mes.groupby(["date"])["wait_length"].quantile(q=0.9),
                                  height=275)
             espera_plot.add_shape(  # add a horizontal "target" line
                 type="line", line_color="red", line_width=1, opacity=0.85,
                 line_dash="dash",
                 x0=1, x1=0, xref="paper", y0=60, y1=60, yref="y")
+            espera_plot.update_xaxes(title_text='Data')
+            espera_plot.update_yaxes(title_text='Espera percentil 90 (s)')
         except ValueError:
             espera_plot = px.bar(mes.groupby(["date"]),
                                  x=mes["date"].unique(),
-                                 y=mes.groupby(["date"])["wait_length"].mean(),
+                                 y=mes.groupby(["date"])["wait_length"].quantile(q=0.9),
                                  height=275)
             espera_plot.add_shape(  # add a horizontal "target" line
                 type="line", line_color="red", line_width=1, opacity=0.85,
                 line_dash="dash",
                 x0=1, x1=0, xref="paper", y0=60, y1=60, yref="y")
+            espera_plot.update_xaxes(title_text='Data')
+            espera_plot.update_yaxes(title_text='Espera percentil 90 (s)')
+
     elif tipo == "Box Plot":
 
         espera_plot = px.box(mes,
@@ -500,21 +512,31 @@ def update_figures_espera(dia, tipo, trabalhadores):
                              notched=True,
                              color_discrete_map={"acima de 90%": "blue",
                                                  "abaixo de 90%": "red"},
+                             labels={"meets_standard": "Cumpre a meta"},
                              height=275)
+        espera_plot.update_xaxes(title_text='Data')
+        espera_plot.update_yaxes(title_text='Tempo de espera')
+
     elif tipo == "Histogram":
         espera_plot = px.histogram(mes,
                                    x="wait_length",
                                    height=275)
+        espera_plot.update_xaxes(title_text='Tempo de espera')
+        espera_plot.update_yaxes(title_text='Frequência')
+
     elif tipo == "Scatter Plot":
         espera_plot = px.scatter(mes,
                                  x="date",
                                  y="wait_length",
                                  color="meets_standard",
-                                 height=275)
+                                 height=275,
+                                 labels={"meets_standard": "Cumpre a meta"})
         espera_plot.add_shape(  # add a horizontal "target" line
             type="line", line_color="red", line_width=1, opacity=0.85,
             line_dash="dash",
             x0=1, x1=0, xref="paper", y0=60, y1=60, yref="y")
+        espera_plot.update_xaxes(title_text='Data')
+        espera_plot.update_yaxes(title_text='Tempo de espera')
 
     return espera_plot
 
