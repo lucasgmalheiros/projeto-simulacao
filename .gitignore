@@ -9,6 +9,7 @@
 !*.png
 !*.py
 # !*.ipynb
+!dados_projeto_final.ipynb
 !*.csv
 !*.doe
 # analisar o conteúdo dentro das pastas
