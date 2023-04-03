@@ -368,7 +368,7 @@ def update_figures_chamadas(dia, tipo, trabalhadores):
                 height=275,
                 color=mes.groupby(["date"])[
                 "daily_caller"].max(),
-                color_continuous_scale="bluered",
+                color_continuous_scale="ylgnbu",
                 labels={"x": "Data", "y": "Nº de Chamadas no Dia"})
         except ValueError:
             callers_graph = px.bar(mes.groupby(["date"]),
@@ -378,20 +378,23 @@ def update_figures_chamadas(dia, tipo, trabalhadores):
                 height=275,
                 color=mes.groupby(["date"])[
                 "daily_caller"].max(),
-                color_continuous_scale="bluered",
+                color_continuous_scale="ylgnbu",
                 labels={"x": "Data", "y": "Nº de Chamadas no Dia"})
         callers_graph.update_yaxes(
             range=[maximo_mes*0.75, maximo_mes*1.1], tick0=0)
         callers_graph.update_coloraxes(colorbar_title="Valores")
+        callers_graph.update_traces(hovertemplate="<b>%{y} Chamadas</b><br>Data:%{x}<br><extra></extra>")
     elif tipo == "Histogram":
         callers_graph = px.histogram(mes.groupby(["date"]),
                                      x=mes.groupby(["date"])[
             "daily_caller"].max(),
-            height=275)
+            height=275,
+            color_discrete_sequence=["#110052"])
+        
 
         callers_graph.update_xaxes(title_text='Número de chamadas')
         callers_graph.update_yaxes(title_text='Frequência')
-
+        callers_graph.update_traces(hovertemplate="<b>%{y} Repetições</b><br>Num. Chamadas:%{x}<br><extra></extra>")
     elif tipo == "Scatter Plot":
         maximo_mes = max(mes.groupby(["date"])["daily_caller"].max())
         callers_graph = px.scatter(mes.groupby(["date"]),
@@ -400,11 +403,12 @@ def update_figures_chamadas(dia, tipo, trabalhadores):
                                    height=275,
                                    color=mes.groupby(["date"])[
                                    "daily_caller"].max(),
-                                   color_continuous_scale="bluered",
+                                   color_continuous_scale="ylgnbu",
                                    labels={"x": "Data", "y": "Nº de Chamadas no Dia"})
         callers_graph.update_yaxes(
             range=[maximo_mes*0.75, maximo_mes*1.1], tick0=0)
         callers_graph.update_coloraxes(colorbar_title="Valores")
+        callers_graph.update_traces(hovertemplate="<b>%{y} Chamadas</b><br>Data:%{x}<br><extra></extra>")
 
     elif tipo == "Box Plot":
         callers_graph = px.box(mes.groupby(["date"]),
