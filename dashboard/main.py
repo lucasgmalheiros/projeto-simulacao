@@ -608,18 +608,35 @@ def update_figures_utl(dia, tipo, trabalhadores):
                  & ((df["workers"] == 0) | (df["workers"] == trabalhadores))]
     
 
+    if datetime.strptime(dia, '%Y-%m-%d').year < 2022:
+        trabalhadores = 4
+
+    horas_disponiveis = 10 * 60 * 60 * trabalhadores
+    utilizacao = mes.groupby("date")["service_length"].sum() / horas_disponiveis
 
 
-    try:
-        utl_plot = px.bar(mes.groupby(["date"]),
-                          x=mes["date"].unique(),
-                          y=mes.groupby(["date"])["service_length"].mean(),
-                          height=275)
-    except ValueError:
-        utl_plot = px.bar(mes.groupby(["date"]),
-                          x=mes["date"].unique(),
-                          y=mes.groupby(["date"])["service_length"].mean(),
-                          height=275)
+    if tipo == "Bar Plot":
+        try:
+            utl_plot = px.bar(mes.groupby(["date"]),
+                              x=mes["date"].unique(),
+                              y=utilizacao,
+                              height=275)
+        except ValueError:
+            utl_plot = px.bar(mes.groupby(["date"]),
+                              x=mes["date"].unique(),
+                              y=utilizacao,
+                              height=275)
+    if tipo == "Histogram":
+        utl_plot = px.histogram(mes.groupby("date"), x= utilizacao, height= 275)
+    
+    if tipo == "Scatter Plot":
+        utl_plot = px.scatter(mes.groupby(["date"]),
+                              x=mes["date"].unique(),
+                              y=utilizacao,
+                              height=275)
+    if tipo == "Box Plot": 
+        utl_plot = px.box(mes.groupby("date"), x= utilizacao, height= 275)
+
 
     return utl_plot
 
