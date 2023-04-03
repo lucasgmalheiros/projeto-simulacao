@@ -437,45 +437,60 @@ def update_figures_atendimentos(dia, tipo, trabalhadores):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
+
     mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)
                  & ((df["workers"] == 0) | (df["workers"] == trabalhadores))]
+
     if tipo == "Bar Plot":
         try:
             atendimento_plot = px.bar(mes.groupby(["date"]),
                                       x=mes["date"].unique(),
                                       y=mes.groupby(["date"])[
                 "service_length"].median(),
-                height=275,
+                height=345,
                 labels={"x": "Data", "y": "Tempo mediano (s)"})
         except ValueError:
             atendimento_plot = px.bar(mes.groupby(["date"]),
                                       x=mes["date"].unique(),
                                       y=mes.groupby(["date"])[
                 "service_length"].median(),
-                height=275,
+                height=345,
                 labels={"x": "Data", "y": "Tempo mediano (s)"})
+        atendimento_plot.update_layout(coloraxis_colorbar_tickformat="s")
+        atendimento_plot.update_layout(coloraxis=dict(colorscale="ylgnbu"))
+
+
     elif tipo == "Box Plot":
         atendimento_plot = px.box(mes,
                                   x="date",
                                   y="service_length",
                                   notched=True,
-                                  height=275)
+                                  height=345)
         atendimento_plot.update_xaxes(title_text='Data')
         atendimento_plot.update_yaxes(title_text='Tempo de atendimento (s)')
+
     elif tipo == "Scatter Plot":
         atendimento_plot = px.scatter(mes,
-                                      x="date",
-                                      y="service_length",
-                                      height=275)
+                                    x="date",
+                                    y="service_length",
+                                    height=345,
+                                    color="service_length",
+                                    color_continuous_scale="ylgnbu",
+                                    size_max=10)
         atendimento_plot.update_xaxes(title_text='Data')
         atendimento_plot.update_yaxes(title_text='Tempo de atendimento (s)')
+
     elif tipo == "Histogram":
         atendimento_plot = px.histogram(mes,
                                         x="service_length",
-                                        height=275)
+                                        height=345, marginal = "box")
         atendimento_plot.update_xaxes(title_text='Tempo de atendimento (s)')
         atendimento_plot.update_yaxes(title_text='Frequência')
+        atendimento_plot.update_traces(hovertemplate="<b>Frequência:%{y}</b><br>Tempo atendimento:%{x}<br><extra></extra>")
+
     return atendimento_plot
+
+
 @app.callback(
     Output("grafico-espera", "figure"),
     [Input("my-date-picker", "date"),
@@ -488,30 +503,40 @@ def update_figures_espera(dia, tipo, trabalhadores):
         dia = "2021-12-31"
     mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)
                  & ((df["workers"] == 0) | (df["workers"] == trabalhadores))]
+
     if tipo == "Bar Plot":
         try:
             espera_plot = px.bar(mes.groupby(["date"]),
                                  x=mes["date"].unique(),
                                  y=mes.groupby(["date"])["wait_length"].quantile(q=0.9),
-                                 height=275)
+                                 height=345)
             espera_plot.add_shape(  # add a horizontal "target" line
                 type="line", line_color="red", line_width=1, opacity=0.85,
                 line_dash="dash",
                 x0=1, x1=0, xref="paper", y0=60, y1=60, yref="y")
             espera_plot.update_xaxes(title_text='Data')
             espera_plot.update_yaxes(title_text='Espera percentil 90 (s)')
+            espera_plot.update_layout(coloraxis_colorbar_tickformat="s")
+            espera_plot.update_layout(coloraxis=dict(colorscale="ylgnbu"))
+    
         except ValueError:
             espera_plot = px.bar(mes.groupby(["date"]),
                                  x=mes["date"].unique(),
                                  y=mes.groupby(["date"])["wait_length"].quantile(q=0.9),
-                                 height=275)
+                                 height=345)
             espera_plot.add_shape(  # add a horizontal "target" line
                 type="line", line_color="red", line_width=1, opacity=0.85,
                 line_dash="dash",
                 x0=1, x1=0, xref="paper", y0=60, y1=60, yref="y")
             espera_plot.update_xaxes(title_text='Data')
             espera_plot.update_yaxes(title_text='Espera percentil 90 (s)')
+            espera_plot.update_layout(coloraxis_colorbar_tickformat="s")
+            espera_plot.update_layout(coloraxis=dict(colorscale="ylgnbu"))
+            espera_plot.update_traces(marker=dict(color=mes.groupby(["date"])["meets_standard"].mean(),
+                                                   coloraxis="coloraxis"))
+
     elif tipo == "Box Plot":
+
         espera_plot = px.box(mes,
                              x="date",
                              y="wait_length",
@@ -520,21 +545,25 @@ def update_figures_espera(dia, tipo, trabalhadores):
                              color_discrete_map={"acima de 90%": "blue",
                                                  "abaixo de 90%": "red"},
                              labels={"meets_standard": "Cumpre a meta"},
-                             height=275)
+                             height=345)
         espera_plot.update_xaxes(title_text='Data')
         espera_plot.update_yaxes(title_text='Tempo de espera')
+
     elif tipo == "Histogram":
         espera_plot = px.histogram(mes,
                                    x="wait_length",
-                                   height=275)
+                                   height=345, marginal = "box")
         espera_plot.update_xaxes(title_text='Tempo de espera')
         espera_plot.update_yaxes(title_text='Frequência')
+
+    
     elif tipo == "Scatter Plot":
+        mes["meets_standard"] = mes["meets_standard"].replace({True: "Sim", False: "Não"})
         espera_plot = px.scatter(mes,
                                  x="date",
                                  y="wait_length",
                                  color="meets_standard",
-                                 height=275,
+                                 height=345,
                                  labels={"meets_standard": "Cumpre a meta"})
         espera_plot.add_shape(  # add a horizontal "target" line
             type="line", line_color="red", line_width=1, opacity=0.85,
@@ -542,7 +571,10 @@ def update_figures_espera(dia, tipo, trabalhadores):
             x0=1, x1=0, xref="paper", y0=60, y1=60, yref="y")
         espera_plot.update_xaxes(title_text='Data')
         espera_plot.update_yaxes(title_text='Tempo de espera')
+
     return espera_plot
+
+
 @app.callback(
     Output("grafico-desistencia", "figure"),
     [Input("my-date-picker", "date"),
@@ -555,20 +587,38 @@ def update_figures_desistencia(dia, tipo, trabalhadores):
         dia = "2021-12-31"
     mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)
                  & ((df["workers"] == 0) | (df["workers"] == trabalhadores))]
+
+    mes["desiste"] = pd.cut(mes["service_length"], bins=[0, 30, 1500000], include_lowest=True, labels=["desistiu", "continuou"])
+
+    desistencia_por_dia = mes.groupby(["date", "desiste"]).size().reset_index()
+    desistencia_por_dia.columns = ["date","categoria","Freq"]
+    desistencia_por_dia['percentage'] = mes.groupby(['date', 'desiste']).size().groupby(level=0).apply(lambda x :  x / float(x.sum())).values
+
+
     if tipo == "Bar Plot":
         try:
-            desistencia_plot = px.bar(mes.groupby(["date"]),
-                                      x=mes["date"].unique(),
-                                      y=mes.groupby(["date"])[
-                "service_length"].mean(),
-                height=275)
+            desistencia_plot = px.bar(desistencia_por_dia, x = "date", y = "percentage", color = "categoria", barmode = "stack", text =  "Freq", 
+                                    height=345)
         except ValueError:
-            desistencia_plot = px.bar(mes.groupby(["date"]),
-                                      x=mes["date"].unique(),
-                                      y=mes.groupby(["date"])[
-                "service_length"].mean(),
-                height=275)
+            desistencia_plot = px.bar(desistencia_por_dia, x = "date", y = "percentage", color = "categoria", barmode = "stack", text = "Freq",
+                                    height=345)
+    elif tipo == "Histogram":
+        # filtrar apenas aqueles que desistiram
+        desistence = desistencia_por_dia.loc[desistencia_por_dia["categoria"] == "desistiu"]
+
+        desistencia_plot = px.histogram(desistence, x = "percentage", height= 345, marginal = "box")
+
+    elif tipo == "Scatter Plot":
+        desistence = desistencia_por_dia.loc[desistencia_por_dia["categoria"] == "desistiu"]
+        desistencia_plot = px.scatter(desistence, x = "date", y = "percentage", height= 345)
+
+    elif tipo == "Box Plot":
+        desistence = desistencia_por_dia.loc[desistencia_por_dia["categoria"] == "desistiu"]
+        desistencia_plot = px.box(desistence, x = "percentage", height = 345)
+
     return desistencia_plot
+
+
 @app.callback(
     Output("grafico-utl", "figure"),
     [Input("my-date-picker", "date"),
@@ -581,17 +631,41 @@ def update_figures_utl(dia, tipo, trabalhadores):
         dia = "2021-12-31"
     mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)
                  & ((df["workers"] == 0) | (df["workers"] == trabalhadores))]
-    try:
-        utl_plot = px.bar(mes.groupby(["date"]),
-                          x=mes["date"].unique(),
-                          y=mes.groupby(["date"])["service_length"].mean(),
-                          height=275)
-    except ValueError:
-        utl_plot = px.bar(mes.groupby(["date"]),
-                          x=mes["date"].unique(),
-                          y=mes.groupby(["date"])["service_length"].mean(),
-                          height=275)
+    
+
+    if datetime.strptime(dia, '%Y-%m-%d').year < 2022:
+        trabalhadores = 4
+
+    horas_disponiveis = 10 * 60 * 60 * trabalhadores
+    utilizacao = mes.groupby("date")["service_length"].sum() / horas_disponiveis
+
+
+    if tipo == "Bar Plot":
+        try:
+            utl_plot = px.bar(mes.groupby(["date"]),
+                              x=mes["date"].unique(),
+                              y=utilizacao,
+                              height=345)
+        except ValueError:
+            utl_plot = px.bar(mes.groupby(["date"]),
+                              x=mes["date"].unique(),
+                              y=utilizacao,
+                              height=345)
+    if tipo == "Histogram":
+        utl_plot = px.histogram(mes.groupby("date"), x= utilizacao, height= 345, marginal="box")
+    
+    if tipo == "Scatter Plot":
+        utl_plot = px.scatter(mes.groupby(["date"]),
+                              x=mes["date"].unique(),
+                              y=utilizacao,
+                              height=345)
+    if tipo == "Box Plot": 
+        utl_plot = px.box(mes.groupby("date"), x= utilizacao, height= 345)
+
+
     return utl_plot
+
+
 # --------------------------------------------------------------------------- #
 # Run server
 if __name__ == '__main__':
