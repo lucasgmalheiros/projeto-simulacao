@@ -9,9 +9,10 @@ from dash import dcc, html, Input, Output
 from datetime import date, datetime
 from time import gmtime, strftime
 from df_manipulation import clean_original_data, clean_arena_data
+from dash_bootstrap_templates import load_figure_template
 
-
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.MATERIA])
+load_figure_template("yeti")
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.YETI])  
 
 # --------------------------------------------------------------------------- #
 # Base de dados reais de 2021
@@ -104,13 +105,13 @@ app.layout = dbc.Container([
                                         "Box Plot"], 'Bar Plot',
                                        id='crossfilter-percentil')]),
                 dcc.Graph(id="grafico-percentil"),
-                ]),
+                ],width=6, className="text-center"),
         dbc.Col([
                 html.Div([dcc.Dropdown(["Bar Plot", "Histogram",
                                         "Scatter Plot",
                                         "Box Plot"], 'Bar Plot',
                                        id='crossfilter-num-chamadas')]),
-                dcc.Graph(id="grafico-chamados")]),
+                dcc.Graph(id="grafico-chamados")],width=6, className="text-center"),
     ], className="mt-1"),
     # Linha 4 - KPIs de tempo médio de atendimento
     dbc.Row(dbc.Col(html.Hr(style={'borderWidth': "0.3vh",
@@ -150,7 +151,7 @@ app.layout = dbc.Container([
                                         "Scatter Plot", "Box Plot"], 'Bar Plot',
                                        id='crossfilter-espera')]),
                 dcc.Graph(id="grafico-espera"),
-                ]
+                ],width=6, className="text-center"
                 ),
         dbc.Col([
                 html.Div([dcc.Dropdown(["Bar Plot", "Histogram",
@@ -158,7 +159,7 @@ app.layout = dbc.Container([
                                         "Box Plot"], 'Bar Plot',
                                        id='crossfilter-atendimento')]),
                 dcc.Graph(id="grafico-atendimento"),
-                ]
+                ],width=6, className="text-center"
                 ),
     ]),
     dbc.Row(dbc.Col(html.Hr(style={'borderWidth': "0.3vh",
@@ -185,7 +186,7 @@ app.layout = dbc.Container([
                                     "Box Plot"], 'Bar Plot',
                                    id='crossfilter-desistencia')]),
             dcc.Graph(id="grafico-desistencia"),
-        ]
+        ],width=6, className="text-center"
         ),
         dbc.Col([
                 html.Div([dcc.Dropdown(["Bar Plot", "Histogram",
@@ -193,11 +194,18 @@ app.layout = dbc.Container([
                                         "Box Plot"], 'Bar Plot',
                                        id='crossfilter-utl')]),
                 dcc.Graph(id="grafico-utl"),
-                ]
+                ],width=6, className="text-center"
                 ),
     ])
 
-])
+],
+
+fluid = True,
+style={
+        'background-image': 'url(“https://raw.githubusercontent.com/optimumconsultoria/gitbook/main/.gitbook/assets/fundo-optimum-logo.png”)',
+        'background-repeat': 'no-repeat',
+        'background-position': 'right top',
+        'background-size': 'cover'})
 
 
 # --------------------------------------------------------------------------- #
