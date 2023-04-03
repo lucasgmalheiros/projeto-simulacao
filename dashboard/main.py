@@ -82,7 +82,7 @@ app.layout = dbc.Container([
                 min=4, max=9, step=1, value=4)],
             width=12),
     ], className="mt-3"),
-    # Linha 3 - KPIs de percentual e clientes atendidos
+    # Linha 3 - KPIs de percentual e clientes atendidos e Tempo Médio 
     dbc.Row([
         dbc.Col(
             dbc.Card(
@@ -271,7 +271,7 @@ def update_figures_percentual(dia, tipo, trabalhadores):
             percent_graph = px.bar(mes.groupby(["date"]),
                                    x=mes["date"].unique(),
                                    y=percent_std,
-                                   height=275,
+                                   height=345,
                                    color=percent_std,
                                    color_continuous_scale="ylgnbu",
                                    labels={"x": "Data",
@@ -280,7 +280,7 @@ def update_figures_percentual(dia, tipo, trabalhadores):
             percent_graph = px.bar(mes.groupby(["date"]),
                                    x=mes["date"].unique(),
                                    y=percent_std,
-                                   height=275,
+                                   height=345,
                                    color=percent_std,
                                    color_continuous_scale="ylgnbu",
                                    labels={"x": "Data",
@@ -301,7 +301,7 @@ def update_figures_percentual(dia, tipo, trabalhadores):
         percent_graph = px.scatter(mes.groupby(["date"]),
                                    x=mes["date"].unique(),
                                    y=percent_std,
-                                   height=275,
+                                   height=345,
                                    color=percent_std,
                                    color_continuous_scale="aggrnyl",
                                    labels={"x": "Data",
@@ -321,10 +321,10 @@ def update_figures_percentual(dia, tipo, trabalhadores):
     
         percent_graph = px.histogram(percentil_std,
                                  x=percentil_std["mean"],
-                                 height=275,
+                                 height=345,
                                  color=percentil_std["Valor"],
                                  opacity=1,
-                                 color_discrete_sequence=["#EB1A00", "#110052"])
+                                 color_discrete_sequence=["#EB1A00", "#110052"], marginal = "box")
     
         percent_graph.update_xaxes(title_text='Percentual atendido em até 1 minuto', tickformat=".1%")
         percent_graph.update_yaxes(title_text='Frequência')
@@ -336,7 +336,7 @@ def update_figures_percentual(dia, tipo, trabalhadores):
     elif tipo == "Box Plot":
         percent_graph = px.box(mes.groupby(["date"]),
                                x=percent_std,
-                               height=275)
+                               height=345)
         percent_graph.update_xaxes(
             title_text='Percentual da meta ao longo do mês')
 
@@ -365,7 +365,7 @@ def update_figures_chamadas(dia, tipo, trabalhadores):
                                    x=mes["date"].unique(),
                                    y=mes.groupby(["date"])[
                 "daily_caller"].max(),
-                height=275,
+                height=345,
                 color=mes.groupby(["date"])[
                 "daily_caller"].max(),
                 color_continuous_scale="ylgnbu",
@@ -375,7 +375,7 @@ def update_figures_chamadas(dia, tipo, trabalhadores):
                                    x=mes["date"].unique(),
                                    y=mes.groupby(["date"])[
                 "daily_caller"].max(),
-                height=275,
+                height=345,
                 color=mes.groupby(["date"])[
                 "daily_caller"].max(),
                 color_continuous_scale="ylgnbu",
@@ -388,9 +388,7 @@ def update_figures_chamadas(dia, tipo, trabalhadores):
         callers_graph = px.histogram(mes.groupby(["date"]),
                                      x=mes.groupby(["date"])[
             "daily_caller"].max(),
-            height=275,
-            color_discrete_sequence=["#110052"])
-        
+            height=275)
 
         callers_graph.update_xaxes(title_text='Número de chamadas')
         callers_graph.update_yaxes(title_text='Frequência')
@@ -400,7 +398,7 @@ def update_figures_chamadas(dia, tipo, trabalhadores):
         callers_graph = px.scatter(mes.groupby(["date"]),
                                    x=mes["date"].unique(),
                                    y=mes.groupby(["date"])["daily_caller"].max(),
-                                   height=275,
+                                   height=345,
                                    color=mes.groupby(["date"])[
                                    "daily_caller"].max(),
                                    color_continuous_scale="ylgnbu",
@@ -413,7 +411,7 @@ def update_figures_chamadas(dia, tipo, trabalhadores):
     elif tipo == "Box Plot":
         callers_graph = px.box(mes.groupby(["date"]),
                                x=mes.groupby(["date"])["daily_caller"].max(),
-                               height=275)
+                               height=345)
         callers_graph.update_xaxes(
             title_text='Chamadas atendidas ao longo do mês')
 
@@ -441,14 +439,14 @@ def update_figures_atendimentos(dia, tipo, trabalhadores):
                                       x=mes["date"].unique(),
                                       y=mes.groupby(["date"])[
                 "service_length"].median(),
-                height=275,
+                height=345,
                 labels={"x": "Data", "y": "Tempo mediano (s)"})
         except ValueError:
             atendimento_plot = px.bar(mes.groupby(["date"]),
                                       x=mes["date"].unique(),
                                       y=mes.groupby(["date"])[
                 "service_length"].median(),
-                height=275,
+                height=345,
                 labels={"x": "Data", "y": "Tempo mediano (s)"})
 
     elif tipo == "Box Plot":
@@ -456,7 +454,7 @@ def update_figures_atendimentos(dia, tipo, trabalhadores):
                                   x="date",
                                   y="service_length",
                                   notched=True,
-                                  height=275)
+                                  height=345)
         atendimento_plot.update_xaxes(title_text='Data')
         atendimento_plot.update_yaxes(title_text='Tempo de atendimento (s)')
 
@@ -464,14 +462,14 @@ def update_figures_atendimentos(dia, tipo, trabalhadores):
         atendimento_plot = px.scatter(mes,
                                       x="date",
                                       y="service_length",
-                                      height=275)
+                                      height=345)
         atendimento_plot.update_xaxes(title_text='Data')
         atendimento_plot.update_yaxes(title_text='Tempo de atendimento (s)')
 
     elif tipo == "Histogram":
         atendimento_plot = px.histogram(mes,
                                         x="service_length",
-                                        height=275)
+                                        height=345, marginal = "box")
         atendimento_plot.update_xaxes(title_text='Tempo de atendimento (s)')
         atendimento_plot.update_yaxes(title_text='Frequência')
 
@@ -496,7 +494,7 @@ def update_figures_espera(dia, tipo, trabalhadores):
             espera_plot = px.bar(mes.groupby(["date"]),
                                  x=mes["date"].unique(),
                                  y=mes.groupby(["date"])["wait_length"].quantile(q=0.9),
-                                 height=275)
+                                 height=345)
             espera_plot.add_shape(  # add a horizontal "target" line
                 type="line", line_color="red", line_width=1, opacity=0.85,
                 line_dash="dash",
@@ -507,7 +505,7 @@ def update_figures_espera(dia, tipo, trabalhadores):
             espera_plot = px.bar(mes.groupby(["date"]),
                                  x=mes["date"].unique(),
                                  y=mes.groupby(["date"])["wait_length"].quantile(q=0.9),
-                                 height=275)
+                                 height=345)
             espera_plot.add_shape(  # add a horizontal "target" line
                 type="line", line_color="red", line_width=1, opacity=0.85,
                 line_dash="dash",
@@ -525,14 +523,14 @@ def update_figures_espera(dia, tipo, trabalhadores):
                              color_discrete_map={"acima de 90%": "blue",
                                                  "abaixo de 90%": "red"},
                              labels={"meets_standard": "Cumpre a meta"},
-                             height=275)
+                             height=345)
         espera_plot.update_xaxes(title_text='Data')
         espera_plot.update_yaxes(title_text='Tempo de espera')
 
     elif tipo == "Histogram":
         espera_plot = px.histogram(mes,
                                    x="wait_length",
-                                   height=275)
+                                   height=345, marginal = "box")
         espera_plot.update_xaxes(title_text='Tempo de espera')
         espera_plot.update_yaxes(title_text='Frequência')
 
@@ -541,7 +539,7 @@ def update_figures_espera(dia, tipo, trabalhadores):
                                  x="date",
                                  y="wait_length",
                                  color="meets_standard",
-                                 height=275,
+                                 height=345,
                                  labels={"meets_standard": "Cumpre a meta"})
         espera_plot.add_shape(  # add a horizontal "target" line
             type="line", line_color="red", line_width=1, opacity=0.85,
@@ -572,28 +570,27 @@ def update_figures_desistencia(dia, tipo, trabalhadores):
     desistencia_por_dia.columns = ["date","categoria","Freq"]
     desistencia_por_dia['percentage'] = mes.groupby(['date', 'desiste']).size().groupby(level=0).apply(lambda x :  x / float(x.sum())).values
 
-    print(desistencia_por_dia.head())
 
     if tipo == "Bar Plot":
         try:
             desistencia_plot = px.bar(desistencia_por_dia, x = "date", y = "percentage", color = "categoria", barmode = "stack", text =  "Freq", 
-                                    height=275)
+                                    height=345)
         except ValueError:
             desistencia_plot = px.bar(desistencia_por_dia, x = "date", y = "percentage", color = "categoria", barmode = "stack", text = "Freq",
-                                    height=275)
+                                    height=345)
     elif tipo == "Histogram":
         # filtrar apenas aqueles que desistiram
         desistence = desistencia_por_dia.loc[desistencia_por_dia["categoria"] == "desistiu"]
 
-        desistencia_plot = px.histogram(desistence, x = "percentage", height= 275)
+        desistencia_plot = px.histogram(desistence, x = "percentage", height= 345, marginal = "box")
 
     elif tipo == "Scatter Plot":
         desistence = desistencia_por_dia.loc[desistencia_por_dia["categoria"] == "desistiu"]
-        desistencia_plot = px.scatter(desistence, x = "date", y = "percentage", height= 275)
+        desistencia_plot = px.scatter(desistence, x = "date", y = "percentage", height= 345)
 
     elif tipo == "Box Plot":
         desistence = desistencia_por_dia.loc[desistencia_por_dia["categoria"] == "desistiu"]
-        desistencia_plot = px.box(desistence, x = "percentage", height = 275)
+        desistencia_plot = px.box(desistence, x = "percentage", height = 345)
 
     return desistencia_plot
 
@@ -624,22 +621,22 @@ def update_figures_utl(dia, tipo, trabalhadores):
             utl_plot = px.bar(mes.groupby(["date"]),
                               x=mes["date"].unique(),
                               y=utilizacao,
-                              height=275)
+                              height=345)
         except ValueError:
             utl_plot = px.bar(mes.groupby(["date"]),
                               x=mes["date"].unique(),
                               y=utilizacao,
-                              height=275)
+                              height=345)
     if tipo == "Histogram":
-        utl_plot = px.histogram(mes.groupby("date"), x= utilizacao, height= 275)
+        utl_plot = px.histogram(mes.groupby("date"), x= utilizacao, height= 345, marginal="box")
     
     if tipo == "Scatter Plot":
         utl_plot = px.scatter(mes.groupby(["date"]),
                               x=mes["date"].unique(),
                               y=utilizacao,
-                              height=275)
+                              height=345)
     if tipo == "Box Plot": 
-        utl_plot = px.box(mes.groupby("date"), x= utilizacao, height= 275)
+        utl_plot = px.box(mes.groupby("date"), x= utilizacao, height= 345)
 
 
     return utl_plot
