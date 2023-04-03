@@ -11,8 +11,8 @@ from time import gmtime, strftime
 from df_manipulation import clean_original_data, clean_arena_data
 from dash_bootstrap_templates import load_figure_template
 
-load_figure_template("quartz")
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.QUARTZ])  
+load_figure_template("minty")
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.MINTY])  
 
 # --------------------------------------------------------------------------- #
 # Base de dados reais de 2021
@@ -347,6 +347,8 @@ def update_figures_percentual(dia, tipo, trabalhadores):
             title_text='Percentual da meta ao longo do mês')
 
     percent_graph.update_layout(template="plotly_white")
+
+    #percent_graph.update_layout({'plot_bgcolor': 'rgba(0, 0, 0, 0)','paper_bgcolor': 'rgba(0, 0, 0, 0)',})
     return percent_graph
 
 
