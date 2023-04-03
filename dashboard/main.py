@@ -562,19 +562,34 @@ def update_figures_desistencia(dia, tipo, trabalhadores):
     mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)
                  & ((df["workers"] == 0) | (df["workers"] == trabalhadores))]
 
+    mes["desiste"] = pd.cut(mes["service_length"], bins=[0, 30, 1500000], include_lowest=True, labels=["desistiu", "continuou"])
+
+    desistencia_por_dia = mes.groupby(["date", "desiste"]).size().reset_index()
+    desistencia_por_dia.columns = ["date","categoria","Freq"]
+    desistencia_por_dia['percentage'] = mes.groupby(['date', 'desiste']).size().groupby(level=0).apply(lambda x :  x / float(x.sum())).values
+
+    print(desistencia_por_dia.head())
+
     if tipo == "Bar Plot":
         try:
-            desistencia_plot = px.bar(mes.groupby(["date"]),
-                                      x=mes["date"].unique(),
-                                      y=mes.groupby(["date"])[
-                "service_length"].mean(),
-                height=275)
+            desistencia_plot = px.bar(desistencia_por_dia, x = "date", y = "percentage", color = "categoria", barmode = "stack", text =  "Freq", 
+                                    height=275)
         except ValueError:
-            desistencia_plot = px.bar(mes.groupby(["date"]),
-                                      x=mes["date"].unique(),
-                                      y=mes.groupby(["date"])[
-                "service_length"].mean(),
-                height=275)
+            desistencia_plot = px.bar(desistencia_por_dia, x = "date", y = "percentage", color = "categoria", barmode = "stack", text = "Freq",
+                                    height=275)
+    elif tipo == "Histogram":
+        # filtrar apenas aqueles que desistiram
+        desistence = desistencia_por_dia.loc[desistencia_por_dia["categoria"] == "desistiu"]
+
+        desistencia_plot = px.histogram(desistence, x = "percentage", height= 275)
+
+    elif tipo == "Scatter Plot":
+        desistence = desistencia_por_dia.loc[desistencia_por_dia["categoria"] == "desistiu"]
+        desistencia_plot = px.scatter(desistence, x = "date", y = "percentage", height= 275)
+
+    elif tipo == "Box Plot":
+        desistence = desistencia_por_dia.loc[desistencia_por_dia["categoria"] == "desistiu"]
+        desistencia_plot = px.box(desistence, x = "percentage", height = 275)
 
     return desistencia_plot
 
@@ -591,6 +606,10 @@ def update_figures_utl(dia, tipo, trabalhadores):
         dia = "2021-12-31"
     mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)
                  & ((df["workers"] == 0) | (df["workers"] == trabalhadores))]
+    
+
+
+
     try:
         utl_plot = px.bar(mes.groupby(["date"]),
                           x=mes["date"].unique(),
