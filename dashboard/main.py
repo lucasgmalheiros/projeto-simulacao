@@ -11,8 +11,8 @@ from time import gmtime, strftime
 from df_manipulation import clean_original_data, clean_arena_data
 from dash_bootstrap_templates import load_figure_template
 
-load_figure_template("yeti")
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.YETI])  
+load_figure_template("quartz")
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.QUARTZ])  
 
 # --------------------------------------------------------------------------- #
 # Base de dados reais de 2021
@@ -89,6 +89,7 @@ app.layout = dbc.Container([
             dbc.Card(
                 [dbc.CardHeader(html.H3("Atendimento em até 1 minuto (%)")),
                  dbc.CardBody(html.H2(id="output-percent-atendimento"))]
+                 #color='rgba(255, 255, 255, 0.7)'
             ), width=6, className="text-center"),
         dbc.Col(
             dbc.Card(
@@ -201,11 +202,8 @@ app.layout = dbc.Container([
 ],
 
 fluid = True,
-style={
-        'background-image': 'url(“https://raw.githubusercontent.com/optimumconsultoria/gitbook/main/.gitbook/assets/fundo-optimum-logo.png”)',
-        'background-repeat': 'no-repeat',
-        'background-position': 'right top',
-        'background-size': 'cover'})
+style={'padding': 40, 'background-image': 'url("/assets/.jpeg")', 'background-size': 'cover'})
+
 
 
 # --------------------------------------------------------------------------- #
