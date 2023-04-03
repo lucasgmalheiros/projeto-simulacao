@@ -7,6 +7,7 @@ arrow==1.2.3
 asttokens==2.2.1
 async-timeout==4.0.2
 attrs==22.2.0
+autopep8==2.0.2
 backcall==0.2.0
 beautifulsoup4==4.11.2
 bleach==6.0.0
@@ -20,6 +21,7 @@ contourpy==1.0.7
 cycler==0.11.0
 dash==2.9.1
 dash-bootstrap-components==1.4.1
+dash-bootstrap-templates==1.0.8
 dash-core-components==2.0.0
 dash-html-components==2.0.0
 dash-table==5.0.0
