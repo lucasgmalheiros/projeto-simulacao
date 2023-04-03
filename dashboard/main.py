@@ -309,7 +309,7 @@ def update_figures_percentual(dia, tipo, trabalhadores):
                                    y=percent_std,
                                    height=345,
                                    color=percent_std,
-                                   color_continuous_scale="aggrnyl",
+                                   color_continuous_scale="ylgnbu",
                                    labels={"x": "Data",
                                            "y": "Atendimentos até 1 minuto (%)"})
         percent_graph.add_shape(  # add a horizontal "target" line
@@ -456,6 +456,10 @@ def update_figures_atendimentos(dia, tipo, trabalhadores):
                 "service_length"].median(),
                 height=345,
                 labels={"x": "Data", "y": "Tempo mediano (s)"})
+        atendimento_plot.update_layout(coloraxis_colorbar_tickformat="s")
+        atendimento_plot.update_layout(coloraxis=dict(colorscale="ylgnbu"))
+        atendimento_plot.update_traces(marker=dict(color=mes.groupby(["date"])["meets_standard"].mean(),
+                                                   coloraxis="coloraxis"))
 
     elif tipo == "Box Plot":
         atendimento_plot = px.box(mes,
@@ -468,9 +472,12 @@ def update_figures_atendimentos(dia, tipo, trabalhadores):
 
     elif tipo == "Scatter Plot":
         atendimento_plot = px.scatter(mes,
-                                      x="date",
-                                      y="service_length",
-                                      height=345)
+                                    x="date",
+                                    y="service_length",
+                                    height=345,
+                                    color="service_length",
+                                    color_continuous_scale="ylgnbu",
+                                    size_max=10)
         atendimento_plot.update_xaxes(title_text='Data')
         atendimento_plot.update_yaxes(title_text='Tempo de atendimento (s)')
 
@@ -480,6 +487,7 @@ def update_figures_atendimentos(dia, tipo, trabalhadores):
                                         height=345, marginal = "box")
         atendimento_plot.update_xaxes(title_text='Tempo de atendimento (s)')
         atendimento_plot.update_yaxes(title_text='Frequência')
+        atendimento_plot.update_traces(hovertemplate="<b>Frequência:%{y}</b><br>Tempo atendimento:%{x}<br><extra></extra>")
 
     return atendimento_plot
 
@@ -509,6 +517,10 @@ def update_figures_espera(dia, tipo, trabalhadores):
                 x0=1, x1=0, xref="paper", y0=60, y1=60, yref="y")
             espera_plot.update_xaxes(title_text='Data')
             espera_plot.update_yaxes(title_text='Espera percentil 90 (s)')
+            espera_plot.update_layout(coloraxis_colorbar_tickformat="s")
+            espera_plot.update_layout(coloraxis=dict(colorscale="ylgnbu"))
+            espera_plot.update_traces(marker=dict(color=mes.groupby(["date"])["meets_standard"].mean(),
+                                                   coloraxis="coloraxis"))
         except ValueError:
             espera_plot = px.bar(mes.groupby(["date"]),
                                  x=mes["date"].unique(),
@@ -520,6 +532,10 @@ def update_figures_espera(dia, tipo, trabalhadores):
                 x0=1, x1=0, xref="paper", y0=60, y1=60, yref="y")
             espera_plot.update_xaxes(title_text='Data')
             espera_plot.update_yaxes(title_text='Espera percentil 90 (s)')
+            espera_plot.update_layout(coloraxis_colorbar_tickformat="s")
+            espera_plot.update_layout(coloraxis=dict(colorscale="ylgnbu"))
+            espera_plot.update_traces(marker=dict(color=mes.groupby(["date"])["meets_standard"].mean(),
+                                                   coloraxis="coloraxis"))
 
     elif tipo == "Box Plot":
 
@@ -542,7 +558,9 @@ def update_figures_espera(dia, tipo, trabalhadores):
         espera_plot.update_xaxes(title_text='Tempo de espera')
         espera_plot.update_yaxes(title_text='Frequência')
 
+    
     elif tipo == "Scatter Plot":
+        mes["meets_standard"] = mes["meets_standard"].replace({True: "Sim", False: "Não"})
         espera_plot = px.scatter(mes,
                                  x="date",
                                  y="wait_length",
