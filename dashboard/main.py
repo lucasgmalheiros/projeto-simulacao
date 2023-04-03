@@ -431,9 +431,10 @@ def update_figures_chamadas(dia, tipo, trabalhadores):
     Output("grafico-atendimento", "figure"),
     [Input("my-date-picker", "date"),
      Input("crossfilter-atendimento", "value"),
-     Input("slider-trabalhadores", "value")]
+     Input("slider-trabalhadores", "value"),
+     Input("slider-percentil-atendimento", "value")]
 )
-def update_figures_atendimentos(dia, tipo, trabalhadores):
+def update_figures_atendimentos(dia, tipo, trabalhadores,quantil):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
@@ -446,20 +447,21 @@ def update_figures_atendimentos(dia, tipo, trabalhadores):
             atendimento_plot = px.bar(mes.groupby(["date"]),
                                       x=mes["date"].unique(),
                                       y=mes.groupby(["date"])[
-                "service_length"].median(),
+                "service_length"].quantile(q=quantil / 100),
                 height=345,
-                labels={"x": "Data", "y": "Tempo mediano (s)"})
+                labels={"x": "Data", "y": f"Tempo para o percentil de {quantil}% (s)"})
         except ValueError:
             atendimento_plot = px.bar(mes.groupby(["date"]),
                                       x=mes["date"].unique(),
                                       y=mes.groupby(["date"])[
-                "service_length"].median(),
+                "service_length"].quantile(q=quantil / 100),
                 height=345,
-                labels={"x": "Data", "y": "Tempo mediano (s)"})
+                labels={"x": "Data", "y": f"Tempo para o percentil de {quantil}% (s)"})
+            
         atendimento_plot.update_layout(coloraxis_colorbar_tickformat="s")
         atendimento_plot.update_layout(coloraxis=dict(colorscale="ylgnbu"))
 
-        atendimento_plot.update_traces(marker=dict(color=mes.groupby(["date"])["service_length"].median(),
+        atendimento_plot.update_traces(marker=dict(color=mes.groupby(["date"])["service_length"].quantile(q=quantil / 100),
                                                    coloraxis="coloraxis"))
 
     elif tipo == "Box Plot":
@@ -508,37 +510,28 @@ def update_figures_espera(dia, tipo, trabalhadores,quantil):
     mes = df.loc[(df["date"].dt.month == datetime.strptime(dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(dia, '%Y-%m-%d').year)
                  & ((df["workers"] == 0) | (df["workers"] == trabalhadores))]
     
-    percent_std = round(mes.groupby(["date"])["meets_standard"].mean(), 2)
-   
-
     if tipo == "Bar Plot": #gráfico da mediana para o percentil de 90%
         try:
             espera_plot = px.bar(mes.groupby(["date"]),
                                  x=mes["date"].unique(),
                                  y=mes.groupby(["date"])["wait_length"].quantile(q=quantil / 100),
                                  height=345, color = mes.groupby(["date"])["wait_length"].quantile(q=quantil / 100), color_continuous_scale="ylgnbu")
-            espera_plot.add_shape(  # add a horizontal "target" line
-                type="line", line_color="red", line_width=1, opacity=0.85,
-                line_dash="dash",
-                x0=1, x1=0, xref="paper", y0=60, y1=60, yref="y")
-            espera_plot.update_xaxes(title_text='Data')
-            espera_plot.update_yaxes(title_text='Espera percentil 90 (s)')
+            
 
-            #espera_plot.update_layout(coloraxis_colorbar_tickformat="s")
-            #espera_plot.update_layout(coloraxis=dict(colorscale="ylgnbu"))
-            #espera_plot.update_traces(marker=dict(color=percent_std,
-                                                   #coloraxis="coloraxis"))
         except ValueError:
             espera_plot = px.bar(mes.groupby(["date"]),
                                  x=mes["date"].unique(),
                                  y=mes.groupby(["date"])["wait_length"].quantile(q=quantil / 100),
                                  height=345, color = mes.groupby(["date"])["wait_length"].quantile(q=quantil / 100), color_continuous_scale="ylgnbu")
-            espera_plot.add_shape(  # add a horizontal "target" line
+        
+        
+        espera_plot.add_shape(  # add a horizontal "target" line
                 type="line", line_color="red", line_width=1, opacity=0.85,
                 line_dash="dash",
                 x0=1, x1=0, xref="paper", y0=60, y1=60, yref="y")
-            espera_plot.update_xaxes(title_text='Data')
-            espera_plot.update_yaxes(title_text='Espera percentil 90 (s)')
+        espera_plot.update_xaxes(title_text='Data')
+        espera_plot.update_yaxes(title_text=f'Espera percentil {quantil}% (s)')
+        
 
     elif tipo == "Box Plot":
 
