@@ -641,14 +641,16 @@ def update_figures_utl(dia, tipo, trabalhadores):
     if tipo == "Bar Plot":
         try:
             utl_plot = px.bar(mes.groupby(["date"]),
-                              x=mes["date"].unique(),
+                              x=mes["date"].unique(), 
                               y=utilizacao,
-                              height=345)
+                              height=345,labels={"x": "Data",
+                                           "y": "Utilização (%)"}, color = utilizacao, color_continuous_scale="ylgnbu")
         except ValueError:
             utl_plot = px.bar(mes.groupby(["date"]),
                               x=mes["date"].unique(),
                               y=utilizacao,
-                              height=345)
+                              height=345,labels={"x": "Data",
+                                           "y": "Utilização (%)"}, color = 'utilizacao', color_continuous_scale="ylgnbu")
     if tipo == "Histogram":
         utl_plot = px.histogram(mes.groupby("date"), x= utilizacao, height= 345, marginal="box")
     
