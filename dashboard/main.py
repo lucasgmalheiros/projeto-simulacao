@@ -561,7 +561,7 @@ def update_figures_espera(dia, tipo, trabalhadores,quantil):
                                  x="date",
                                  y="wait_length",
                                  color="meets_standard",
-                                 height=345,
+                                 height=345, 
                                  labels={"meets_standard": "Cumpre a meta"})
         espera_plot.add_shape(  # add a horizontal "target" line
             type="line", line_color="red", line_width=1, opacity=0.85,
@@ -608,7 +608,7 @@ def update_figures_desistencia(dia, tipo, trabalhadores):
 
     elif tipo == "Scatter Plot":
         desistence = desistencia_por_dia.loc[desistencia_por_dia["categoria"] == "desistiu"]
-        desistencia_plot = px.scatter(desistence, x = "date", y = "percentage", height= 345)
+        desistencia_plot = px.scatter(desistence, x = "date", y = "percentage", color = desistence["percentage"], color_continuous_scale="ylgnbu",height= 345)
 
     elif tipo == "Box Plot":
         desistence = desistencia_por_dia.loc[desistencia_por_dia["categoria"] == "desistiu"]
@@ -641,10 +641,9 @@ def update_figures_utl(dia, tipo, trabalhadores):
     if tipo == "Bar Plot":
         try:
             utl_plot = px.bar(mes.groupby(["date"]),
-                              x=mes["date"].unique(), 
+                              x=mes["date"].unique(),
                               y=utilizacao,
-                              height=345,labels={"x": "Data",
-                                           "y": "Utilização (%)"}, color = utilizacao, color_continuous_scale="ylgnbu")
+                              height=345)
         except ValueError:
             utl_plot = px.bar(mes.groupby(["date"]),
                               x=mes["date"].unique(),
@@ -657,7 +656,7 @@ def update_figures_utl(dia, tipo, trabalhadores):
     if tipo == "Scatter Plot":
         utl_plot = px.scatter(mes.groupby(["date"]),
                               x=mes["date"].unique(),
-                              y=utilizacao,
+                              y=utilizacao, color = utilizacao, color_continuous_scale= "ylgnbu",
                               height=345)
     if tipo == "Box Plot": 
         utl_plot = px.box(mes.groupby("date"), x= utilizacao, height= 345)
