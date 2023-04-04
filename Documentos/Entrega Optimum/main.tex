@@ -1,0 +1,80 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{newtxtext} % Times New Roman
+\usepackage[top=3cm, bottom=2cm, left=3cm, right=2cm]{geometry}
+\usepackage{ragged2e}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{makeidx}
+\usepackage{graphicx}
+\usepackage{afterpage}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{tikz}
+\usepackage{quattrocento}
+%pacotes usados para mudar a cor da página
+\usepackage{xcolor}
+\usepackage{graphicx}
+
+\definecolor{OptimumGray}{HTML}{272727}	
+
+
+
+
+\usetikzlibrary{fit,shapes.geometric}
+\makeindex % Criar índice depois
+
+\newcounter{nodemarkers}
+\newcommand\circletext[1]{%
+    \tikz[overlay,remember picture] 
+        \node (marker-\arabic{nodemarkers}-a) at (0,1.5ex) {};%
+    #1%
+    \tikz[overlay,remember picture]
+        \node (marker-\arabic{nodemarkers}-b) at (0,0){};%
+    \tikz[overlay,remember picture,inner sep=2pt]
+        \node[draw,ellipse,fit=(marker-\arabic{nodemarkers}-a.center) (marker-\arabic{nodemarkers}-b.center)] {};%
+    \stepcounter{nodemarkers}%
+}
+
+% Início do corpo do texto
+\begin{document}
+
+\input{capa/capa-optimum.tex}
+
+% \fontfamily{qag}  
+
+\newpage{}
+\tableofcontents{}
+\newpage{}
+
+\section{Introdução}
+\label{section: intro}
+\input{introducao/introducao.tex}
+
+\section{Análise de dados}
+\input{analise-de-dados/intro-analise/intro-analise.tex}
+\input{analise-de-dados/anual/anual.tex}
+\input{analise-de-dados/mensal/mensal.tex}
+\input{analise-de-dados/trimestral/trimestral.tex}
+\input{analise-de-dados/semanal/semanal.tex}
+\input{analise-de-dados/regressao/regressao.tex}
+\input{analise-de-dados/fit/fit-mensal.tex}
+\input{analise-de-dados/sumario/sumario.tex}
+
+\section{Simulação}
+\label{section: simulacao}
+\input{simulacao/simulacao.tex}
+\input{simulacao/modelo-2021.tex}
+\input{simulacao/modelo-2022.tex}
+
+\section{Propostas de melhoria}
+\label{section: propostas}
+\input{propostas/propostas.tex}
+
+\section{Conclusão}
+\label{section: conclusao}
+\input{conclusao/conclusao.tex}
+
+\end{document}

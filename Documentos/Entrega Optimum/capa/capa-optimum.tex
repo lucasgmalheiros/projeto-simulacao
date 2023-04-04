@@ -1,0 +1,67 @@
+
+%comando que muda a cor
+\pagecolor{OptimumGray}\afterpage{\nopagecolor}
+
+%daqui para baixo vai estar tudo centralizado
+% Margens personalizadas
+\newgeometry{top=3.5cm,bottom=3.5cm,right=3cm,left=3cm}
+% Corpo da capa
+\begin{titlepage}
+\fontfamily{lmr}\selectfont
+\pagecolor{OptimumGray}\afterpage{\nopagecolor}
+% Header
+\center
+\color{white}
+\vspace*{5px} 
+\textsc{\Huge Optimum Consultoria}\\[0.4cm] 
+% Logo Optimum
+\vfill
+\includegraphics[scale = 2.05]{capa/images/Logo_short_transparente_branco.png}
+\vfill
+% Footer
+\textsc{\LARGE Simulação de Processos em Call Centers} \\[0.5cm]
+\textsc{\huge } \\ [0.5cm] 
+% Data
+\vspace*{\fill}
+\large{SÃO CARLOS}
+% Fim da capa
+\end{titlepage}
+% Retorna à geometria definida no preâmbulo
+\restoregeometry
+\newpage%\center
+%\textsc{Quinze de Dezembro de 2022}\\[0.55cm]
+%comando para adicionar uma nova folha em branco
+\newcommand\blankpage{%
+    \null
+    \thispagestyle{empty}%
+    \addtocounter{page}{-1}%
+    \newpage}
+
+\afterpage{\blankpage}
+
+\color{black}
+%criar uma folha de rosto 
+\begin{titlepage}
+\vfill
+\begin{center} 
+{\Huge  Simulação de Processos em Call Centers} \\[0.5cm] 
+{\LARGE Recomendações Baseadas em Análise de Dados} \\[1cm]
+\hspace{.45\textwidth}
+\begin{minipage}{.5\textwidth}
+
+	{\Large O projeto se trata de um estudo dos dados históricos de um call-center, modelagem e simulação de cenários futuros, com sugestões e recomendações para melhoria dos processos da empresa.} \\[1cm] %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+	{\normalsize Autores: \\[0.25cm]
+            Pedro Peverari Di Lallo \\ 
+			Paulo Roberto Mattielo Filho\\
+			João Victor Pantaroto Neves\\
+			Lucas Gabriel Malheiros Machado  } \\[1cm]
+	\vspace{2.5pt} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+
+\end{minipage}
+\vfill
+\textsc{\LARGE 4 de Abril de 2023, São Carlos - SP} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{center}
+\end{titlepage}
+\vfill 
