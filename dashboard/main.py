@@ -279,11 +279,7 @@ def update_figures_percentual(dia, tipo, trabalhadores):
                                    y=percent_std,
                                    height=345,
                                    color=percent_std,
-<<<<<<< HEAD
-                                   color_continuous_scale="ylgnbu", 
-=======
                                    color_continuous_scale="darkmint",
->>>>>>> 94aa75bf02ba56c6bd723da52972be4efdf11147
                                    labels={"x": "Data",
                                            "y": "Atendimentos até 1 minuto (%)"})
         except ValueError:
@@ -350,7 +346,7 @@ def update_figures_percentual(dia, tipo, trabalhadores):
         percent_graph.update_xaxes(
             title_text='Percentual da meta ao longo do mês')
 
-    percent_graph.update_layout(template="plotly")
+    percent_graph.update_layout(template="plotly_white")
 
     #percent_graph.update_layout({'plot_bgcolor': 'rgba(0, 0, 0, 0)','paper_bgcolor': 'rgba(0, 0, 0, 0)',})
     return percent_graph
