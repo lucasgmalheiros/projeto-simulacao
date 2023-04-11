@@ -22,32 +22,32 @@ df = clean_original_data(df)
 df["workers"] = 0
 # dados simulados com 4 trabalhadores
 da4 = pd.read_csv(
-    "https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/arena/Modelo%202022/output_call_center_4.csv")
+    "https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/arena/modelo-2022/output_call_center_4.csv")
 da4 = clean_arena_data(da4)
 da4["workers"] = 4
 # dados simulados com 5 trabalhadores
 da5 = pd.read_csv(
-    "https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/arena/Modelo%202022/output_call_center_5.csv")
+    "https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/arena/modelo-2022/output_call_center_5.csv")
 da5 = clean_arena_data(da5)
 da5["workers"] = 5
 # dados simulados com 6 trabalhadores
 da6 = pd.read_csv(
-    "https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/arena/Modelo%202022/output_call_center_6.csv")
+    "https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/arena/modelo-2022/output_call_center_6.csv")
 da6 = clean_arena_data(da6)
 da6["workers"] = 6
 # dados simulados com 7 trabalhadores
 da7 = pd.read_csv(
-    "https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/arena/Modelo%202022/output_call_center_7.csv")
+    "https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/arena/modelo-2022/output_call_center_7.csv")
 da7 = clean_arena_data(da7)
 da7["workers"] = 7
 # dados simulados com 8 trabalhadores
 da8 = pd.read_csv(
-    "https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/arena/Modelo%202022/output_call_center_8.csv")
+    "https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/arena/modelo-2022/output_call_center_8.csv")
 da8 = clean_arena_data(da8)
 da8["workers"] = 8
 # dados simulados com 9 trabalhadores
 da9 = pd.read_csv(
-    "https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/arena/Modelo%202022/output_call_center_9.csv")
+    "https://raw.githubusercontent.com/lucasgmalheiros/projeto-simulacao-VCBC/main/arena/modelo-2022/output_call_center_9.csv")
 da9 = clean_arena_data(da9)
 da9["workers"] = 9
 # Junção dos dataframes
