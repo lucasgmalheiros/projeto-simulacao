@@ -17,22 +17,3 @@ da central de atendimentos?
 ## Dados
 
 Um conjunto de dados (disponível [aqui](calls.csv)) obtidos da empresa registra os timestamps de quando uma chamada foi recebida, quando a chamada foi atendida, e quando a chamada foi concluída. Além disso, contém o registro do tipo de ligação segundo suas características. Os tempos totais de espera e serviço são calculados, assim como uma marcação para saber se a chamada foi atendida dentro do padrão de desempenho.
-
-## Entregáveis, Prazos e local de entrega
-
-Os entregáveis devem ser depositados no AVA (1 depósito por grupo) em tópico específico:
-1. Relatório com Modelagem de dados de entrada: aba “Avaliação 2 - Projeto Final - Entrega 1” até o dia 13/03/2023 e apresentação no dia 14/03/2023. Atentem-se para os prazos e formato dos arquivos solicitados no AVA. As entregas em atraso serão penalizadas em 1 ponto por semana de atraso:
-
-    a) Relatório descrevendo os pressupostos do problema, as considerações, o método usado para resolver o problema e as soluções
-
-2. Relatório com Modelagem de simulação no Arena: aba “Avaliação 2 - Projeto Final - Entrega 2” até o dia 20/03/2023 e apresentação no dia 21/03/2023. Atentem-se para os prazos e formato dos arquivos solicitados no AVA. As entregas em atraso serão penalizadas em 1 ponto por semana de atraso.
-
-    a) Relatório descrevendo os pressupostos do problema, as considerações, o método usado para resolver o problema e as soluções (versão atualizada contendo indicações das alterações da versão anterior)
-
-    b) Modelo salvo no Arena (arquivo .doe) que representa o sistema.
-
-3. Relatório Final: aba “Avaliação 2 - Projeto Final - Entrega Final” até o dia 02/04/2023 e apresentação no dia 04/04/2023. Atentem-se para os prazos e formato dos arquivos solicitados no AVA. As entregas em atraso não serão aceitas.
-
-    a) Relatório descrevendo os pressupostos do problema, as considerações, o método usado para resolver o problema e as soluções (versão atualizada contendo indicações das alterações da versão anterior);
-
-    b) Modelo salvo no Arena (arquivo .doe) que representa o sistema (se houver alteração da versão anterior).
