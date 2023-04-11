@@ -1,0 +1,6 @@
+cd '.\Documents\Estudos\UFSCar\Simulacao\Projeto final\virtual-env\Scripts\'
+.\activate
+cd ..
+cd..
+cd .\apresentacao
+jupyter nbconvert 'dados_projeto_final.ipynb' --to slides --post serve --no-input

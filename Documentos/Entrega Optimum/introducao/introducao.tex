@@ -1,15 +1,13 @@
 \subsection{Descrição do problema}
 \label{section: descricao}
-O trabalho desenvolvido diz respeito a uma central de atendimentos que funciona das 8:00 às 18:00 (turno diário de dez horas) e apresenta quatro funcionários encarregados do processamento das ligações (atendimento). O caso apresentado é relacionado ao desempenho da central de atendimentos. A meta fundamental é de atender 90\% das chamadas em até 1 minuto, e a central opera com seus atendentes disponíveis durante o horário comercial de segunda a sexta-feira.
+O trabalho desenvolvido diz respeito ao estudo de caso da gestão de uma central de atendimentos que funciona das 8:00 às 18:00 (turno diário de dez horas) e possui quatro funcionários, todos encarregados do atendimento das ligações, que estão disponíveis durante o todo o horário de funcionamento de segunda a sexta-feira.
 
-O caso apresentado é relacionado ao desempenho da central de atendimentos. A meta fundamental é de atender 90\% das chamadas em até 1 minuto, e a central opera com seus atendentes disponíveis durante o horário comercial de segunda a sexta-feira.
+O objetivo do trabalho proposto é analisar o desempenho da central de atendimentos e fazer recomendações para que a empresa possa cumprir sua principal meta estabelecida pela gerência, que é a de atender 90\% das chamadas em até 1 minuto. Para isso, serão utilizadas técnicas de simulação de eventos discretos e análise de dados históricos.
 
-O objetivo do trabalho proposto é analisar o desempenho da central de atendimento e fazer recomendações para que a empresa possa cumprir sua meta de desempenho. Para isso, serão utilizadas técnicas de simulação de eventos discretos e análise de dados históricos.
+Algumas das análises esperadas pelo gerente incluem: determinação do volume máximo de chamadas que pode ser tratado sem violar a meta de desempenho de 90\% das chamadas atendidas em até 1 minuto, construção de painel de controle para mostrar o desempenho da central em cada dia, com indicadores-chave de desempenho (KPIs) apresentados, e exploração de diferentes níveis de agregação, como trimestral, mensal e semanal, para determinar qual é o mais relevante para a gestão da central de atendimentos.
 
-Algumas das análises esperadas pelo gerente incluem a determinação do volume máximo de chamadas que pode ser tratado sem violar a meta de desempenho de 90\% das chamadas atendidas em até 1 minuto. Além disso, será construído um painel de controle para mostrar o desempenho da central em cada dia, com indicadores-chave de desempenho (KPIs) apresentados. Serão explorados diferentes níveis de agregação, como trimestral, mensal e semanal, para determinar qual é o mais relevante para a gestão da central de atendimento.
+Por fim, será proposta uma série de recomendações para o gerente da central de atendimentos, a fim de que ele possa tomar medidas para melhorar o desempenho da empresa e atingir novamente a meta estabelecida.
 
-Por fim, será proposta uma série de recomendações para o gerente da central de atendimento, a fim de que ele possa tomar medidas para melhorar o desempenho da empresa e atingir novamente a meta estabelecida.
-
-O sistema para a simulação discreta foi construído com base em um ACD (Activity cicle diagram) que analisa as interações ocorrentes entre as entidades participantes do processo. Posteriormente, com os dados estatísticos e as distribuições de chegadas das ligações conhecidas, foi possível realizar a simulação do evento utilizando o software ARENA, que deposita suas informações em um documento CSV. 
+O sistema para a simulação discreta foi construído com base em um ACD (Activity cicle diagram) que analisa as interações entre as entidades participantes do processo. Posteriormente, com os dados estatísticos e as distribuições de chegadas das ligações conhecidas, foi possível realizar a simulação do evento utilizando o software ARENA, que deposita suas informações em um documento CSV. 
 
 Com as informações a respeito da simulação, e utilizando a linguagem Python para análise de dados, foi possível avaliar os resultados e validá-los estatisticamente.
