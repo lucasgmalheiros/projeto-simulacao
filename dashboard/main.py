@@ -7,59 +7,16 @@ import dash_bootstrap_components as dbc
 from dash import dcc, html, Input, Output
 from datetime import datetime
 from time import gmtime, strftime
-from df_manipulation import clean_original_data, clean_arena_data
 from dash_bootstrap_templates import load_figure_template
+from df_manipulation import upload_db
+
 
 load_figure_template("minty")
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.MINTY])
 
 # --------------------------------------------------------------------------- #
-# Base de dados reais de 2021
-df = pd.read_csv(
-    "https://raw.githubusercontent.com/"
-    "lucasgmalheiros/simulacao-call-center/main/calls.csv")
-df = clean_original_data(df)
-df["workers"] = 0
-# dados simulados com 4 trabalhadores
-da4 = pd.read_csv(
-    "https://raw.githubusercontent.com/lucasgmalheiros/simulacao-call-center"
-    "/main/arena/modelo-2022/output_call_center_4.csv")
-da4 = clean_arena_data(da4)
-da4["workers"] = 4
-# dados simulados com 5 trabalhadores
-da5 = pd.read_csv(
-    "https://raw.githubusercontent.com/lucasgmalheiros/simulacao-call-center"
-    "/main/arena/modelo-2022/output_call_center_5.csv")
-da5 = clean_arena_data(da5)
-da5["workers"] = 5
-# dados simulados com 6 trabalhadores
-da6 = pd.read_csv(
-    "https://raw.githubusercontent.com/lucasgmalheiros/simulacao-call-center"
-    "/main/arena/modelo-2022/output_call_center_6.csv")
-da6 = clean_arena_data(da6)
-da6["workers"] = 6
-# dados simulados com 7 trabalhadores
-da7 = pd.read_csv(
-    "https://raw.githubusercontent.com/lucasgmalheiros/simulacao-call-center"
-    "/main/arena/modelo-2022/output_call_center_7.csv")
-da7 = clean_arena_data(da7)
-da7["workers"] = 7
-# dados simulados com 8 trabalhadores
-da8 = pd.read_csv(
-    "https://raw.githubusercontent.com/lucasgmalheiros/simulacao-call-center"
-    "/main/arena/modelo-2022/output_call_center_8.csv")
-da8 = clean_arena_data(da8)
-da8["workers"] = 8
-# dados simulados com 9 trabalhadores
-da9 = pd.read_csv(
-    "https://raw.githubusercontent.com/lucasgmalheiros/simulacao-call-center"
-    "/main/arena/modelo-2022/output_call_center_9.csv")
-da9 = clean_arena_data(da9)
-da9["workers"] = 9
-# Junção dos dataframes
-d_merge = pd.concat([df, da4, da5, da6, da7, da8, da9],
-                    ignore_index=True, sort=False)
-df = d_merge
+# Base de dados completa (histórico e simulação)
+df = upload_db()
 
 # --------------------------------------------------------------------------- #
 # Layout do app
@@ -208,7 +165,6 @@ app.layout = dbc.Container([
     ])
 
 ],
-
     fluid=True,
     style={'padding': 40, 'background-image':
            'url("/assets/.jpeg")',
@@ -276,11 +232,13 @@ def update_figures_percentual(dia, tipo, trabalhadores):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
+
     # Gráficos para cada um dos KPIS
     mes = df.loc[(df["date"].dt.month == datetime.strptime(
         dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(
             dia, '%Y-%m-%d').year)
                  & ((df["workers"] == 0) | (df["workers"] == trabalhadores))]
+
     # Gráficos do percentual
     percent_std = round(mes.groupby(["date"])["meets_standard"].mean(), 2)
 
@@ -386,6 +344,7 @@ def update_figures_chamadas(dia, tipo, trabalhadores):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
+
     mes = df.loc[(df["date"].dt.month == datetime.strptime(
         dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(
             dia, '%Y-%m-%d').year)
@@ -549,6 +508,7 @@ def update_figures_espera(dia, tipo, trabalhadores, quantil):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
+
     mes = df.loc[(df["date"].dt.month == datetime.strptime(
         dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(
             dia, '%Y-%m-%d').year)
@@ -634,6 +594,7 @@ def update_figures_desistencia(dia, tipo, trabalhadores):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
+
     mes = df.loc[(df["date"].dt.month == datetime.strptime(
         dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(
             dia, '%Y-%m-%d').year)
@@ -692,6 +653,7 @@ def update_figures_utl(dia, tipo, trabalhadores):
     """Função de callback dos gráficos dos KPIs."""
     if dia == "2021-12-31T00:00:00":
         dia = "2021-12-31"
+
     mes = df.loc[(df["date"].dt.month == datetime.strptime(
         dia, '%Y-%m-%d').month) & (df["date"].dt.year == datetime.strptime(
             dia, '%Y-%m-%d').year)

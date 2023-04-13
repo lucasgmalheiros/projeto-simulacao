@@ -4,7 +4,7 @@ from datetime import datetime
 import numpy as np
 
 
-def clean_original_data(df):
+def clean_original_data(df: pd.DataFrame) -> pd.DataFrame:
     """Realiza o tratamento do dataframe original."""
     # Conversão do time stamp da data
     df["date"] = pd.to_datetime(df.date, format="%d/%m/%Y")
@@ -23,7 +23,7 @@ def clean_original_data(df):
     return df
 
 
-def clean_arena_data(df):
+def clean_arena_data(df: pd.DataFrame) -> pd.DataFrame:
     """Tratamento do arquivo .csv do Arena."""
     # Removendo coluna fantasma
     df = df.drop('Unnamed: 5', axis=1)
@@ -78,3 +78,68 @@ def clean_arena_data(df):
 
     # Retorna dataframe organizado
     return df
+
+
+def upload_db() -> pd.DataFrame:
+    """Carrega os arquivos csv do GitHub."""
+    # Base de dados reais de 2021
+    dr = pd.read_csv(
+        "https://raw.githubusercontent.com/"
+        "lucasgmalheiros/simulacao-call-center/main/calls.csv"
+        )
+    dr = clean_original_data(dr)
+    dr["workers"] = 0
+
+    # dados simulados com 4 trabalhadores
+    da4 = pd.read_csv(
+        "https://raw.githubusercontent.com/lucasgmalheiros/"
+        "simulacao-call-center/main/arena/modelo-2022/output_call_center_4.csv"
+        )
+    da4 = clean_arena_data(da4)
+    da4["workers"] = 4
+
+    # dados simulados com 5 trabalhadores
+    da5 = pd.read_csv(
+        "https://raw.githubusercontent.com/lucasgmalheiros/"
+        "simulacao-call-center/main/arena/modelo-2022/output_call_center_5.csv"
+        )
+    da5 = clean_arena_data(da5)
+    da5["workers"] = 5
+
+    # dados simulados com 6 trabalhadores
+    da6 = pd.read_csv(
+        "https://raw.githubusercontent.com/lucasgmalheiros/"
+        "simulacao-call-center/main/arena/modelo-2022/output_call_center_6.csv"
+        )
+    da6 = clean_arena_data(da6)
+    da6["workers"] = 6
+
+    # dados simulados com 7 trabalhadores
+    da7 = pd.read_csv(
+        "https://raw.githubusercontent.com/lucasgmalheiros/"
+        "simulacao-call-center/main/arena/modelo-2022/output_call_center_7.csv"
+        )
+    da7 = clean_arena_data(da7)
+    da7["workers"] = 7
+
+    # dados simulados com 8 trabalhadores
+    da8 = pd.read_csv(
+        "https://raw.githubusercontent.com/lucasgmalheiros/"
+        "simulacao-call-center/main/arena/modelo-2022/output_call_center_8.csv"
+        )
+    da8 = clean_arena_data(da8)
+    da8["workers"] = 8
+
+    # dados simulados com 9 trabalhadores
+    da9 = pd.read_csv(
+        "https://raw.githubusercontent.com/lucasgmalheiros/"
+        "simulacao-call-center/main/arena/modelo-2022/output_call_center_9.csv"
+        )
+    da9 = clean_arena_data(da9)
+    da9["workers"] = 9
+
+    # Junção dos dataframes
+    d_merge = pd.concat([dr, da4, da5, da6, da7, da8, da9],
+                        ignore_index=True, sort=False)
+
+    return d_merge
