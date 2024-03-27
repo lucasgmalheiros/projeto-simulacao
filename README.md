@@ -15,8 +15,10 @@ da central de atendimentos?
 * O que o gerente da central de atendimento deve fazer para devolver as operações ao desempenho?
 
 # Dados
-
 Um conjunto de dados (disponível [aqui](calls.csv)) obtidos da empresa registra os timestamps de quando uma chamada foi recebida, quando a chamada foi atendida, e quando a chamada foi concluída. Além disso, contém o registro do tipo de ligação segundo suas características. Os tempos totais de espera e serviço são calculados, assim como uma marcação para saber se a chamada foi atendida dentro do padrão de desempenho.
+
+# Análise de dados
+A análise de dados foi desenvolvida [neste notebook](https://github.com/lucasgmalheiros/simulacao-call-center/blob/main/resultados/dados_projeto_final.ipynb) e conta com análises exploratórias, testes de hipóteses, modelagem de distribuições de probabilidade e aplicação de modelos de previsão utilizando as bibliotecas Pandas, NumPy, SciPy, Matplotlib, Seaborn, Plotly, scikit-learn, Statsmodels e Fitter. Os dados foram modelados para a entrada no software de simulação de eventos discretos [Arena](https://www.rockwellautomation.com/pt-br/products/software/arena-simulation.html). Outras simulações foram realizadas em Python utilizando a biblioteca SimPy. A partir da análise de dados e simulações foi possível diagnosticar a situação do negócio e propor soluções de melhoria.
 
 # Dashboard
 O dashboard desenvolvido em Python com as bibliotecas Dash e Plotly apresentou os KPIs, para cada dia selecionado, do percentual de cumprimento da meta, número de atendimentos, tempo de espera para o percentil selecionado, tempo de atendimento para o percentil selecionado, taxa de desistência (ligações que duraram menos de 30 segundos) e taxa de utilização dos atendentes. Os gráficos interativos apresentam os valores do KPI para cada dia do mês selecionado. Diferentes visualizações, além do gráfico de barras, estão disponíveis, como histogramas, gráficos de dispersão e box plots.
